@@ -24,15 +24,18 @@ class Terminal extends \Magento\Backend\Block\Template
     /**
      * @param \Magento\Backend\Block\Template\Context $context
      * @param \Magento\Framework\Registry $registry
+     * @param \Omnivalt\Shipping\Model\Carrier $omnivaltCarrier
+     * @param \Magento\Framework\App\ProductMetadataInterface $productMetadata
+     * @param \Omnivalt\Shipping\Model\LabelHistoryFactory $labelhistoryFactory
      * @param array $data
      */
     public function __construct(
             \Magento\Backend\Block\Template\Context $context,
             \Magento\Framework\Registry $registry,
-            array $data = [],
             Carrier $omnivaltCarrier,
             \Magento\Framework\App\ProductMetadataInterface $productMetadata,
-            LabelHistoryFactory $labelhistoryFactory
+            LabelHistoryFactory $labelhistoryFactory,
+            array $data = []
     ) {
         $this->coreRegistry = $registry;
         $this->omnivaltCarrier = $omnivaltCarrier;
