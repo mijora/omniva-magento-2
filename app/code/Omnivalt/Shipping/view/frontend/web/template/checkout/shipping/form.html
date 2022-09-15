@@ -3,9 +3,8 @@
     <div data-bind="visible: showParcelTerminalSelection()">
         <select class="parcel-terminal-list" data-bind="
                                             foreach: parcelTerminals(),
-                                            value: selectedParcelTerminal,
                                             " >
-            <option value = "" data-bind = "i18n:'Select terminal'"></option>
+            <option value = "" data-bind = "value: '', visible: $index() == 0, i18n:'Select terminal'"></option>
             <optgroup data-bind="attr: {label: name}, foreach: terminals">
                 <option data-bind="value: zip, text: name + ' (' + location +')', attr:{'data-x': x,'data-y': y,'data-comment': comment,'data-name':name,'data-location':location,'data-city':city}" ></option>
             </optgroup>
