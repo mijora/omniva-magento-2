@@ -702,8 +702,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     $additionalServices[] = (new AdditionalService())->setServiceCode('BP');
                 }
             }
-            
-            $_orderServices = json_decode($order->getOmnivaltServices(), true);
+            $_orderServices = json_decode($order->getOmnivaltServices() ?? '[]', true);
             if (isset($_orderServices['services']) && is_array($_orderServices['services'])) {
                 foreach ($_orderServices['services'] as $_service) {
                     $additionalServices[] = (new AdditionalService())->setServiceCode($_service);
