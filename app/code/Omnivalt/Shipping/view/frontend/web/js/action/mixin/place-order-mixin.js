@@ -11,7 +11,7 @@ define([
             let shippingAddress = quote.shippingAddress();
                 
                 
-            if (selectedShippingMethod.carrier_code !== 'omnivalt') {
+            if (selectedShippingMethod === null || selectedShippingMethod.carrier_code !== 'omnivalt') {
                 return originalAction(paymentData, redirectOnSuccess);
             }
                 
