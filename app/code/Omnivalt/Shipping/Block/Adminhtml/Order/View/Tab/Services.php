@@ -62,7 +62,7 @@ class Services extends \Magento\Backend\Block\Template implements \Magento\Backe
           'omnivalt_courier',
           'omnivalt_courier_plus'
         );
-        $order_shipping_method = strtolower($order->getData('shipping_method'));
+        $order_shipping_method = strtolower($order->getData('shipping_method') ?? '');
         return in_array($order_shipping_method, $_methods);
       }
 

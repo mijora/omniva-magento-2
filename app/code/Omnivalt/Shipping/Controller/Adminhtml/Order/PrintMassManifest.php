@@ -153,7 +153,7 @@ class PrintMassManifest extends \Magento\Sales\Controller\Adminhtml\Order\Abstra
                 $street = $shippingAddress->getStreet();
                 $parcel_terminal_address = '';
 
-                if (strtoupper($order->getData('shipping_method')) == strtoupper('omnivalt_PARCEL_TERMINAL')) {
+                if (strtoupper($order->getData('shipping_method') ?? '') == strtoupper('omnivalt_PARCEL_TERMINAL')) {
                     $shippingAddress = $order->getShippingAddress();
                     $terminal_id = $shippingAddress->getOmnivaltParcelTerminal();
                     $order_address = $this->omnivalt_carrier->getTerminalAddress($terminal_id);

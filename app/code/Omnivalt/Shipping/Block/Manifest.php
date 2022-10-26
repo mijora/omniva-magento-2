@@ -37,7 +37,7 @@ class Manifest extends \Magento\Framework\View\Element\Template
     }
     
     public function getShippingMethod($order) {
-        $order_shipping_method = strtolower($order->getData('shipping_method'));
+        $order_shipping_method = strtolower($order->getData('shipping_method') ?? '');
         if ($order_shipping_method === 'omnivalt_courier') {
             return __('Courier');
         }
