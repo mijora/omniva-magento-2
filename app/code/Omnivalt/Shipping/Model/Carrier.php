@@ -286,6 +286,15 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         $isFreeEnabled = $this->getConfigData('free_shipping_enable');
         $allowedMethods = explode(',', $this->getConfigData('allowed_methods'));
         $company_country = $this->getConfigData('company_countrycode');
+        
+        $country_id = $request->getDestCountryId();
+        
+        if (!$country_id) {
+            $country_id = $this->_checkoutSession->getQuote()
+                ->getShippingAddress()
+                ->getCountryId();
+        }
+
         foreach ($allowedMethods as $allowedMethod) {
             $method = $this->_rateMethodFactory->create();
 
@@ -294,11 +303,8 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
 
             $method->setMethod($allowedMethod);
             $method->setMethodTitle($this->getCode('method', $allowedMethod));
-            $amount = $this->getConfigData('price');
-
-            $country_id = $this->_checkoutSession->getQuote()
-                    ->getShippingAddress()
-                    ->getCountryId();
+            $amount = false;
+            $freeFrom = false;
 
             if ($allowedMethod == "COURIER") {
                 switch ($country_id) {
@@ -310,7 +316,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                         $amount = $this->getConfigData('priceEE_C');
                         $freeFrom = $this->getConfigData('ee_courier_free_shipping_subtotal');
                         break;
-                    default:
+                    case 'LT':
                         $amount = $this->getConfigData('price');
                         $freeFrom = $this->getConfigData('lt_courier_free_shipping_subtotal');
                 }
@@ -325,7 +331,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                         $amount = $this->getConfigData('priceEE_pt');
                         $freeFrom = $this->getConfigData('ee_parcel_terminal_free_shipping_subtotal');
                         break;
-                    default:
+                    case 'LT':
                         $amount = $this->getConfigData('price2');
                         $freeFrom = $this->getConfigData('lt_parcel_terminal_free_shipping_subtotal');
                 }
@@ -338,9 +344,14 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     continue;
                 }
             }
-            if ($isFreeEnabled && $packageValue >= $freeFrom) {
+            if ($isFreeEnabled && $packageValue >= $freeFrom && $freeFrom >= 0 && $freeFrom != '') {
                 $amount = 0;
             }
+
+            if ($amount === false) {
+                continue;
+            }
+
             $method->setPrice($amount);
             $method->setCost($amount);
 
