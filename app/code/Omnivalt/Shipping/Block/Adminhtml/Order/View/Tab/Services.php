@@ -48,7 +48,14 @@ class Services extends \Magento\Backend\Block\Template implements \Magento\Backe
      */
     public function getOrder()
     {
-        return $this->coreRegistry->registry('current_order');
+        $order = $this->coreRegistry->registry('current_order');
+        $default_fragile = $this->omniva_carrier->getConfigData('fragile');
+        if ($default_fragile && $order->getOmnivaltServices() == null) {
+            $order->setOmnivaltServices(json_encode(array('services'=>['BC'])));
+            $order->save();
+        }
+
+        return $order;
     }   
 
     public function getServices(){

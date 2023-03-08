@@ -158,6 +158,11 @@
                     <label>Combine labels</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <!-- Fragile -->
+                <field id="fragile" translate="label" type="select" sortOrder="201" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Default fragile option</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
                 <field id="allowed_methods" translate="label" type="multiselect" sortOrder="201" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Allowed Methods</label>
                     <source_model>Omnivalt\Shipping\Model\Source\Method</source_model>

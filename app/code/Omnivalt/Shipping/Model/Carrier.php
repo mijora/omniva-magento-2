@@ -713,6 +713,12 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     $additionalServices[] = (new AdditionalService())->setServiceCode('BP');
                 }
             }
+            $default_fragile = $this->getConfigData('fragile');
+            if ($default_fragile && $order->getOmnivaltServices() == null) {
+                $order->setOmnivaltServices(json_encode(array('services'=>['BC'])));
+                $order->save();
+            }
+
             $_orderServices = json_decode($order->getOmnivaltServices() ?? '[]', true);
             if (isset($_orderServices['services']) && is_array($_orderServices['services'])) {
                 foreach ($_orderServices['services'] as $_service) {
