@@ -196,7 +196,7 @@ class ShippingMethod {
         'persons_over_18' => array(
             'title' => 'Issue to persons at the age of 18+',
             'code' => 'PC',
-            'only_for' => array('CE', 'CD'),
+            'only_for' => array('CE', 'CD', 'PA', 'PU', 'PK', 'QH'),
             'in_product' => false,
             'in_order' => 'checkbox',
             'add_always' => false,
