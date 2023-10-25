@@ -10,14 +10,7 @@
 <?php /** @var $block \Magento\Sales\Block\Adminhtml\Order\View\Tab\Info */ ?>
 <?php $_order = $block->getOrder() ?>
 <?php $_orderServices = $_order->getOmnivaltServices(); ?>
-<?php foreach ($_order->getAllItems() as $item) {
-    $attr = $item->getProduct()->getCustomAttribute('adult');
-    if ($attr) {
-        $attr->getValue() == '1';
-    }
-}
 
-?> 
 <?php
     if ($_orderServices == null){
         $_orderServices = array('services'=> array());
