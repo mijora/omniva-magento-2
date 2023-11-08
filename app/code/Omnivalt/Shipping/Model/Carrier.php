@@ -873,6 +873,9 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             }
             if ($this->hasAttributeProducts($order)) {
                 $services[] = 'PC';
+                if (!in_array('BC', $services)) {
+                    $services[] = 'BC';
+                }
             }
             $order->setOmnivaltServices(json_encode(array('services'=>$services)));
             $order->save();
