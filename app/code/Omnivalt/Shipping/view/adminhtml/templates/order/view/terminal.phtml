@@ -10,7 +10,7 @@ if (($this->blockIsVisible())) {
         }
         echo '<b>' . __("Omniva parcel terminal") . '</b>: '; //.$pickup_point ;
         if ($this->getOrder()->getStatus() == "closed" || $this->getOrder()->getStatus() == "complete") {
-            echo $pickup_point ?? '-' . '</div>';
+            echo ($pickup_point ? $pickup_point : '-') . '</div>';
         } else {
             ?>
             <?php $locs = $this->getTerminals($this->getOrder()); ?>

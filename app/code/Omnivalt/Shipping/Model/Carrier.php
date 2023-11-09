@@ -713,11 +713,8 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     $additionalServices[] = (new AdditionalService())->setServiceCode('BP');
                 }
             }
-            $default_fragile = $this->getConfigData('fragile');
-            if ($default_fragile && $order->getOmnivaltServices() == null) {
-                $order->setOmnivaltServices(json_encode(array('services'=>['BC'])));
-                $order->save();
-            }
+            // set fragile or/adn 18+ service
+            $this->setOrderServices($order);
 
             $_orderServices = json_decode($order->getOmnivaltServices() ?? '[]', true);
             if (isset($_orderServices['services']) && is_array($_orderServices['services'])) {
@@ -866,6 +863,39 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             
         }
         return false;
+    }
+
+    public function setOrderServices($order) {
+        if ($order->getOmnivaltServices() == null) {
+            $services = [];
+            if ($this->getConfigData('fragile')) {
+                $services[] = 'BC';
+            }
+            if ($this->hasAttributeProducts($order)) {
+                $services[] = 'PC';
+                if (!in_array('BC', $services)) {
+                    $services[] = 'BC';
+                }
+            }
+            $order->setOmnivaltServices(json_encode(array('services'=>$services)));
+            $order->save();
+        }
+    }
+
+    public function hasAttributeProducts($order) {
+        $attr_code = $this->getConfigData('attr_code');
+        if (!$attr_code) {
+            return false;
+        }
+        $has = false;
+        foreach ($order->getAllItems() as $item) {
+            $attr = $item->getProduct()->getCustomAttribute($attr_code);
+            if ($attr && $attr->getValue() == '1') {
+                $has = true;
+                break;
+            }
+        }
+        return $has;
     }
 
 }

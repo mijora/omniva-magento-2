@@ -2,7 +2,6 @@
 
 namespace Omnivalt\Shipping\Block\Adminhtml\Order\View\Tab;
 
-
 class Services extends \Magento\Backend\Block\Template implements \Magento\Backend\Block\Widget\Tab\TabInterface
 {
     /**
@@ -50,10 +49,7 @@ class Services extends \Magento\Backend\Block\Template implements \Magento\Backe
     {
         $order = $this->coreRegistry->registry('current_order');
         $default_fragile = $this->omniva_carrier->getConfigData('fragile');
-        if ($default_fragile && $order->getOmnivaltServices() == null) {
-            $order->setOmnivaltServices(json_encode(array('services'=>['BC'])));
-            $order->save();
-        }
+        $this->omniva_carrier->setOrderServices($order);
 
         return $order;
     }   

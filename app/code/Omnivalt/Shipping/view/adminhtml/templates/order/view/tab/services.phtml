@@ -10,6 +10,7 @@
 <?php /** @var $block \Magento\Sales\Block\Adminhtml\Order\View\Tab\Info */ ?>
 <?php $_order = $block->getOrder() ?>
 <?php $_orderServices = $_order->getOmnivaltServices(); ?>
+
 <?php
     if ($_orderServices == null){
         $_orderServices = array('services'=> array());
