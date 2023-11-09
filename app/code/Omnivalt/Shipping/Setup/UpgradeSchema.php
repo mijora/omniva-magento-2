@@ -95,6 +95,30 @@ class UpgradeSchema implements UpgradeSchemaInterface
             );
         }
 
+        if(version_compare($context->getVersion(), '1.2.17', '<')) {
+            $installer->getConnection()->changeColumn( 
+                $setup->getTable('sales_order_address'), 
+                'omnivalt_parcel_terminal',
+                'omnivalt_parcel_terminal',
+                [ 
+                   'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 
+                   'length' => 50, 
+                   'nullable' => true, 
+                   'comment' => 'Omnivalt Parcel Terminal' 
+                ] 
+            ); 
+            $installer->getConnection()->changeColumn( 
+                $setup->getTable('quote_address'), 
+                'omnivalt_parcel_terminal',
+                'omnivalt_parcel_terminal', 
+                [ 
+                   'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT, 
+                   'length' => 50, 
+                   'nullable' => true, 
+                   'comment' => 'Omnivalt Parcel Terminal' 
+                ] 
+            ); 
+        }
 
         $setup->endSetup();
     }
