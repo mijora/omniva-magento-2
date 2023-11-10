@@ -153,8 +153,20 @@
                         <field id="free_shipping_enable">1</field>
                     </depends>
                 </field>
+                <!-- FI Courier -->
+                <field id="priceFI_C" translate="label" type="text" sortOrder="194" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>FI Courier shipping price</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                </field>
+                <field id="fi_courier_free_shipping_subtotal" translate="label" type="text" sortOrder="189" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Free from</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <depends>
+                        <field id="free_shipping_enable">1</field>
+                    </depends>
+                </field>
                 <!-- FI Parcel -->
-                <field id="priceFI_pt" translate="label" type="text" sortOrder="194" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="priceFI_pt" translate="label" type="text" sortOrder="195" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>FI Parcel terminal shipping price</label>
                     <validate>validate-number validate-zero-or-greater</validate>
                 </field>
