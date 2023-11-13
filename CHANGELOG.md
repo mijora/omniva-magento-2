@@ -1,4 +1,8 @@
 # Changelog
+
+### Version 1.2.17
+Added support to send to FI parcel terminals
+
 ### Version 1.2.16
 Added 'PC' service, delivery to 18+ age receivers.
 To use it, you need to create custom attribute for product, **Yes/No** type.

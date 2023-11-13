@@ -249,10 +249,11 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         try {
             $var = $this->variableFactory->create();
             $var->loadByCode('OMNIVA_REFRESH');
-            if (!$var->getId() || $var->getPlainValue() < time() - 3600 * 24) {
-                $omnivaLocs = $this->omnivaPickupPoints->getFilteredLocations();
+            if (!$var->getId() || $var->getPlainValue() < time() - 3600 * 24 || !file_exists($this->_locationFile)) {
+                //$omnivaLocs = $this->omnivaPickupPoints->getFilteredLocations();
+                $omnivaLocs = file_get_contents('https://omniva.ee/locationsfull.json');
                 if ($omnivaLocs) {
-                    $this->omnivaPickupPoints->saveLocationsToJSONFile($this->_locationFile, json_encode($omnivaLocs));
+                    $this->omnivaPickupPoints->saveLocationsToJSONFile($this->_locationFile, $omnivaLocs);
                     if (!$var->getId()) {
                         $var->setData(['code' => 'OMNIVA_REFRESH',
                             'plain_value' => time()
@@ -316,6 +317,10 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                         $amount = $this->getConfigData('priceEE_C');
                         $freeFrom = $this->getConfigData('ee_courier_free_shipping_subtotal');
                         break;
+                    case 'FI':
+                        $amount = $this->getConfigData('priceFI_C');
+                        $freeFrom = $this->getConfigData('fi_courier_free_shipping_subtotal');
+                        break;
                     case 'LT':
                         $amount = $this->getConfigData('price');
                         $freeFrom = $this->getConfigData('lt_courier_free_shipping_subtotal');
@@ -331,6 +336,10 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                         $amount = $this->getConfigData('priceEE_pt');
                         $freeFrom = $this->getConfigData('ee_parcel_terminal_free_shipping_subtotal');
                         break;
+                    case 'FI':
+                        $amount = $this->getConfigData('priceFI_pt');
+                        $freeFrom = $this->getConfigData('fi_parcel_terminal_free_shipping_subtotal');
+                        break;
                     case 'LT':
                         $amount = $this->getConfigData('price2');
                         $freeFrom = $this->getConfigData('lt_parcel_terminal_free_shipping_subtotal');
@@ -343,6 +352,8 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 } else {
                     continue;
                 }
+            } elseif ($country_id == "FI" && $company_country != 'EE') {
+                continue;
             }
             if ($isFreeEnabled && $packageValue >= $freeFrom && $freeFrom >= 0 && $freeFrom != '') {
                 $amount = 0;
@@ -388,7 +399,8 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             'country' => [
                 'EE' => __('Estonia'),
                 'LV' => __('Latvia'),
-                'LT' => __('Lithuania')
+                'LT' => __('Lithuania'),
+                'FI' => __('Finland')
             ],
             'tracking' => [
             ],
@@ -398,11 +410,13 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $locations = [];
             $locationsArray = $this->omnivaPickupPoints->loadLocationsFromJSONFile($this->_locationFile);
             foreach ($locationsArray as $loc_data) {
-                $locations[$loc_data['ZIP']] = array(
-                    'name' => $loc_data['NAME'],
-                    'country' => $loc_data['A0_NAME'],
-                    'x' => $loc_data['X_COORDINATE'],
-                );
+                if ((int) $loc_data['TYPE'] !== 1 && (float) $loc_data['X_COORDINATE'] > 0 && (float) $loc_data['Y_COORDINATE'] > 0) {
+                    $locations[$loc_data['ZIP']] = array(
+                        'name' => $loc_data['NAME'],
+                        'country' => $loc_data['A0_NAME'],
+                        'x' => $loc_data['X_COORDINATE'],
+                    );
+                }
             }
             $codes['terminal'] = $locations;
         }
@@ -439,7 +453,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         if (file_exists($this->_locationFile)) {
             $locationsArray = $this->omnivaPickupPoints->loadLocationsFromJSONFile($this->_locationFile);
             foreach ($locationsArray as $loc_data) {
-                if ($loc_data['A0_NAME'] == $countryCode || $countryCode == null) {
+                if (($loc_data['A0_NAME'] == $countryCode || $countryCode == null) && ((int) $loc_data['TYPE'] !== 1 && (float) $loc_data['X_COORDINATE'] > 0 && (float) $loc_data['Y_COORDINATE'] > 0)) {
                     $terminals[] = $loc_data;
                 }
             }
@@ -707,7 +721,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     ->setService($service);
             
             $additionalServices = [];
-            if ($service == "PA" || $service == "PU") {
+            if ($service == "PA" || $service == "PU" || $service == 'CD') {
                 $additionalServices[] = (new AdditionalService())->setServiceCode('ST');
                 if ($is_cod) {
                     $additionalServices[] = (new AdditionalService())->setServiceCode('BP');
@@ -755,7 +769,6 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             if ($send_method_name === 'PARCEL_TERMINAL') {
                 $address->setOffloadPostcode($order->getShippingAddress()->getOmnivaltParcelTerminal());
             }
-
             $receiverContact
                     ->setAddress($address)
                     ->setMobile($request->getRecipientContactPhoneNumber())
@@ -781,7 +794,6 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
 
             //set auth data
             $shipment->setAuth($username, $password);
-
             $shipment_result = $shipment->registerShipment();
             if (isset($shipment_result['barcodes'])) {
                 foreach ($shipment_result['barcodes'] as $_barcode) {

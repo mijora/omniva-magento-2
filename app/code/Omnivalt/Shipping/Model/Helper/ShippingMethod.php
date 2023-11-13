@@ -39,6 +39,8 @@ class ShippingMethod {
             'c pc' => 'QB', //QB in documentation
             'c po' => 'CD', //not sure
             'c c' => 'CE', //not sure
+            'pt pt' => 'CD',
+            'c pt' => 'CD',
             'courier_call' => 'CE',
         ),
     );
@@ -82,7 +84,7 @@ class ShippingMethod {
         ),
         'FI' => array(
             'title' => 'Finland',
-            'methods' => array('courier', 'private_customer'),
+            'methods' => array('pickup', 'courier', 'private_customer'),
             'shipping_sets' => array(
                 'LT' => 'estonia',
                 'LV' => 'estonia',

@@ -399,18 +399,15 @@ var omniva_last_selected_terminal = '';
         }
         
         function initMap(){
-           $('#omnivaMapContainer').html('<div id="omnivaMap"></div>');
-          if (omnivadata.omniva_current_country == "LT"){
-            map = L.map('omnivaMap').setView([54.999921, 23.96472], 8);
-          }
-          else if (omnivadata.omniva_current_country == "LV"){
-            map = L.map('omnivaMap').setView([56.8796, 24.6032], 8);
-          }
-          else if (omnivadata.omniva_current_country == "EE"){
-            map = L.map('omnivaMap').setView([58.7952, 25.5923], 7);
-          } else {
-            map = L.map('omnivaMap').setView([54.999921, 23.96472], 8);
-          }
+          $('#omnivaMapContainer').html('<div id="omnivaMap"></div>');
+          var locations = terminals;
+          let _coordsArray = [];
+          locations.forEach(item => {
+            _coordsArray.push([item.x, item.y]);
+          });
+          let bounds = new L.LatLngBounds(_coordsArray);
+          map = L.map('omnivaMap').setView(bounds.getCenter(),7);
+
           L.tileLayer('https://maps.omnivasiunta.lt/tile/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.omniva.lt">Omniva</a>' +
                     ' | Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
@@ -438,7 +435,7 @@ var omniva_last_selected_terminal = '';
             terminalIcon = new Icon({iconUrl: omnivadata.omniva_plugin_url+'sasi.png'});
             homeIcon = new Icon2({iconUrl: omnivadata.omniva_plugin_url+'locator_img.png'});
             
-          var locations = terminals;
+          
           
             jQuery.each( locations, function( key, location ) {
               L.marker([location.x, location.y], {icon: terminalIcon, terminalId:location.zip }).on('click',function(e){ listTerminals(locations,0,this.options.terminalId);terminalDetails(this.options.terminalId);}).addTo(map);
