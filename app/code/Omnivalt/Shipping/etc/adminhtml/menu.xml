@@ -1,6 +1,19 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
-        <add id="Omnivalt_Shipping::manifest" title="Omniva manifest" parent = "Magento_Sales::sales_operation" module="Omnivalt_Shipping" action="omnivalt/omnivamanifest/index" sortOrder="51" resource="Magento_Sales::sales_operation"/>
+        <add id="Omnivalt_Shipping::manifest" 
+            title="Omniva manifest" 
+            parent = "Magento_Sales::sales_operation" 
+            module="Omnivalt_Shipping" 
+            action="omnivalt/omnivamanifest/index" 
+            sortOrder="51" 
+            resource="Magento_Sales::sales_operation"/>
+        <add id="Omnivalt_Shipping::courier_request"
+            title="Omniva pickup requests" 
+            module="Omnivalt_Shipping"
+            sortOrder="52" 
+            parent="Magento_Sales::sales_operation"
+            action="omnivalt/courierrequest/index"
+            resource="Omnivalt_Shipping::courier_request"/>
     </menu>
 </config>
