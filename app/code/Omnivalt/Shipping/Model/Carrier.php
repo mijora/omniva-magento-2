@@ -29,6 +29,7 @@ use Mijora\Omniva\Shipment\Label;
 use Mijora\Omniva\Shipment\Tracking;
 use Mijora\Omniva\Shipment\CallCourier;
 use Omnivalt\Shipping\Model\LabelHistoryFactory;
+use Omnivalt\Shipping\Model\CourierRequestFactory;
 
 /**
  * Omnivalt shipping implementation
@@ -163,6 +164,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
     protected $variableFactory;
     protected $omnivaPickupPoints;
     protected $labelhistoryFactory;
+    protected $courierRequestFactory;
     protected $shipping_helper;
 
     /**
@@ -213,6 +215,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             \Magento\Variable\Model\VariableFactory $variableFactory,
             PickupPoints $omnivaPickupPoints,
             LabelHistoryFactory $labelhistoryFactory,
+            CourierRequestFactory $courierRequestFactory,
             \Omnivalt\Shipping\Model\Helper\ShippingMethod $shipping_helper,
             array $data = []
     ) {
@@ -224,6 +227,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         $this->variableFactory = $variableFactory;
         $this->omnivaPickupPoints = $omnivaPickupPoints;
         $this->labelhistoryFactory = $labelhistoryFactory;
+        $this->courierRequestFactory = $courierRequestFactory;
         $this->shipping_helper = $shipping_helper;
         parent::__construct(
                 $scopeConfig,
@@ -544,6 +548,21 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         return $arr;
     }
 
+    public function cancelOmnivaPickup($id) {
+        try {
+            $username = $this->getConfigData('account');
+            $password = $this->getConfigData('password');
+
+            $call = new CallCourier();
+            $call->setAuth($username, $password);
+            $is_canceled = $call->cancelCourierOmx($id);
+            return $is_canceled ? true : false;
+        } catch (\Exception $e) {
+            
+        }
+        return false;
+    }
+
     public function callOmniva() {
         try {
             $username = $this->getConfigData('account');
@@ -575,18 +594,26 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     ->setPersonName($name);
 
             $call = new CallCourier();
-            $call->setAuth($username, $password, $api_url);
-            $call->setSender($senderContact);
-            $call->setEarliestPickupTime($pickStart);
-            $call->setLatestPickupTime($pickFinish);
+            $call
+                ->setAuth($username, $password)
+                ->setSender($senderContact)
+                ->setEarliestPickupTime($pickStart)
+                ->setLatestPickupTime($pickFinish)
+                ->setComment('');
             $call_result = $call->callCourier();
-            if ($call_result) {
+            if ($call->getResponseCallNumber()) {
+                $model = $this->courierRequestFactory->create();
+                $data = [
+                    'omniva_request_id' => $call->getResponseCallNumber()
+                ];
+                $model->setData($data);
+                $model->save();
                 return true;
             } else {
                 return false;
             }
         } catch (\Exception $e) {
-            
+
         }
         return false;
     }

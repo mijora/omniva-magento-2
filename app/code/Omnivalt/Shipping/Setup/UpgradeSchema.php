@@ -120,6 +120,45 @@ class UpgradeSchema implements UpgradeSchemaInterface
             ); 
         }
 
+        if(version_compare($context->getVersion(), '1.2.18', '<')) {
+            if (!$installer->tableExists('omnivalt_courier_requests')) {
+                $table = $installer->getConnection()->newTable($installer->getTable('omnivalt_courier_requests'))
+                        ->addColumn(
+                                'courier_request_id',
+                                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                                null,
+                                [
+                                    'identity' => true,
+                                    'nullable' => false,
+                                    'primary' => true,
+                                    'unsigned' => true,
+                                ],
+                                'Courier request ID'
+                        )
+                        ->addColumn(
+                                'omniva_request_id',
+                                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                                255,
+                                [],
+                                'Request ID in omniva'
+                        )
+                        ->addColumn(
+                                'created_at',
+                                \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                                null,
+                                ['nullable' => false, 'default' => \Magento\Framework\DB\Ddl\Table::TIMESTAMP_INIT],
+                                'Created At'
+                        )->addColumn(
+                                'updated_at',
+                                \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                                null,
+                                ['nullable' => false, 'default' => \Magento\Framework\DB\Ddl\Table::TIMESTAMP_INIT_UPDATE],
+                                'Updated At')
+                        ->setComment('Omnivalt Courier requests');
+                $installer->getConnection()->createTable($table);
+            }
+        }
+
         $setup->endSetup();
     }
 
