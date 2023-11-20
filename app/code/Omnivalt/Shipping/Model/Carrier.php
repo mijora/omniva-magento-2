@@ -761,7 +761,8 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $shipmentHeader
                     ->setSenderCd($username)
                     ->setFileId(date('Ymdhis'));
-            $shipment->setShipmentHeader($shipmentHeader);
+            $shipment->setShipmentHeader($shipmentHeader)
+                ->setComment('');
 
             $package = new Package();
             $package
