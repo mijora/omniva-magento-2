@@ -20,8 +20,8 @@ class Index extends \Magento\Backend\App\Action {
     public function execute() {
         $this->_view->loadLayout();
         $resultPage = $this->resultPageFactory->create();
-        $resultPage->getConfig()->getTitle()->prepend(__('Omniva pickup requests'));
         $resultPage->setActiveMenu('Omnivalt_Shipping::courier_request');
+        $resultPage->getConfig()->getTitle()->prepend(__('Omniva pickup requests'));
         $resultPage->addBreadcrumb(__('Omniva'), __('Courier requests'));
         $this->_addContent($this->_view->getLayout()->createBlock('Omnivalt\Shipping\Block\Adminhtml\CourierRequest\Grid'));
         $this->_view->renderLayout();
