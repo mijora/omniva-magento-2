@@ -32,7 +32,7 @@ class Delete extends \Magento\Framework\App\Action\Action
             $model->delete();
             $this->messageManager->addSuccess(__('The courier request has been deleted.'));
         } else {
-            $this->messageManager->addWarning(__('Failed to delete request.'));
+            $this->messageManager->addWarning(__('Failed to delete request. Request does not exist or has passed'));
         }
         $this->_redirect($this->_redirect->getRefererUrl());
         return;
