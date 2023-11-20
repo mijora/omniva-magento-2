@@ -17,8 +17,8 @@ class Index extends  \Magento\Backend\App\Action
 
   public function execute()
   {
-
       $resultPage = $this->resultPageFactory->create();
+      $resultPage->setActiveMenu('Omnivalt_Shipping::manifest');
       $resultPage->getConfig()->getTitle()->prepend(__('Omniva manifest'));
 
       return $resultPage;
