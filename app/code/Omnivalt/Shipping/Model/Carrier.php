@@ -300,8 +300,6 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $method = $this->_rateMethodFactory->create();
 
             $method->setCarrier('omnivalt');
-            //$title = ($country_id == 'FI')
-            //$method->setCarrierTitle($this->getConfigData('title'));
 
             $method->setMethod($allowedMethod);
             $method->setMethodTitle($this->getCode('method', $allowedMethod));
