@@ -17,6 +17,9 @@
                 <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Title</label>
                 </field>
+                <field id="title_matkahuolto" translate="label" type="text" sortOrder="21" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Title for Matkahuolto</label>
+                </field>
                 <field id="account" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>User ID</label>
                 </field>

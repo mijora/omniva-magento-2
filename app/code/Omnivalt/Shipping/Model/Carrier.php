@@ -300,12 +300,14 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $method = $this->_rateMethodFactory->create();
 
             $method->setCarrier('omnivalt');
-            $method->setCarrierTitle($this->getConfigData('title'));
+            //$title = ($country_id == 'FI')
+            //$method->setCarrierTitle($this->getConfigData('title'));
 
             $method->setMethod($allowedMethod);
             $method->setMethodTitle($this->getCode('method', $allowedMethod));
             $amount = false;
             $freeFrom = false;
+            $title = $this->getConfigData('title');
 
             if ($allowedMethod == "COURIER") {
                 switch ($country_id) {
@@ -339,6 +341,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     case 'FI':
                         $amount = $this->getConfigData('priceFI_pt');
                         $freeFrom = $this->getConfigData('fi_parcel_terminal_free_shipping_subtotal');
+                        $title = $this->getConfigData('title_matkahuolto');
                         break;
                     case 'LT':
                         $amount = $this->getConfigData('price2');
@@ -355,6 +358,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             } elseif ($country_id == "FI" && $company_country != 'EE') {
                 continue;
             }
+
             if ($isFreeEnabled && $packageValue >= $freeFrom && $freeFrom >= 0 && $freeFrom != '') {
                 $amount = 0;
             }
@@ -363,6 +367,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 continue;
             }
 
+            $method->setCarrierTitle($title);
             $method->setPrice($amount);
             $method->setCost($amount);
 
