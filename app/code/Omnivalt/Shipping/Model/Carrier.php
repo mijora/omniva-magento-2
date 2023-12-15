@@ -665,8 +665,11 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $country = $this->getConfigData('company_countrycode');
             $bank_account = $this->getConfigData('cod_bank_account');
 
+            $receiver_country = $request->getRecipientAddressCountryCode();
+
             $payment_method = $order->getPayment()->getMethodInstance()->getCode();
-            $is_cod = $payment_method == 'msp_cashondelivery';
+            $cod_payments = array('msp_cashondelivery', 'cashondelivery');
+            $is_cod = in_array($payment_method, $cod_payments);
 
             $send_method_name = trim($request->getShippingMethod());
             $pickup_method = $this->getConfigData('pickup');
@@ -676,6 +679,11 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 $send_method = 'pt';
             } else if (strtolower($send_method_name) == 'courier_plus') {
                 $send_method = 'cp';
+            }
+
+            if ( $is_cod && $receiver_country == 'FI' && strtolower($send_method_name) == 'parcel_terminal' ) {
+                $result->setErrors('Additional service COD is not available in this country');
+                return $result;
             }
             
             $service = $this->shipping_helper->getShippingService($this, $send_method, $order);
@@ -762,7 +770,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $receiverContact = new Contact();
             $address = new Address();
             $address
-                    ->setCountry($request->getRecipientAddressCountryCode())
+                    ->setCountry($receiver_country)
                     ->setPostcode($request->getRecipientAddressPostalCode())
                     ->setDeliverypoint($request->getRecipientAddressCity())
                     ->setStreet($request->getRecipientAddressStreet1());
