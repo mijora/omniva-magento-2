@@ -72,6 +72,7 @@ define([
                     var omnivadata = [];
                     omnivadata.omniva_plugin_url = require.toUrl('Omnivalt_Shipping/css/');
                     omnivadata.omniva_current_country = quote.shippingAddress().countryId;
+                    omnivadata.text_title = $.mage.__('Omniva parcel terminals');
                     omnivadata.text_select_terminal = $.mage.__('Select terminal');
                     omnivadata.text_search_placeholder = $.mage.__('Enter postcode');
                     omnivadata.not_found = $.mage.__('Place not found');
@@ -79,7 +80,13 @@ define([
                     omnivadata.text_show_in_map = $.mage.__('Show in map');
                     omnivadata.text_show_more = $.mage.__('Show more');
                     omnivadata.postcode = quote.shippingAddress().postcode;
+
+                    if (omnivadata.omniva_current_country == 'FI') {
+                        omnivadata.text_title = $.mage.__('Matkahuolto parcel terminals');
+                    }
+
                     $('#terminal-select-location select').omniva({omnivadata:omnivadata});
+                    $('.omniva-modal-header > h5').text(omnivadata.text_title);
                 }
             }
             if (typeof omniva_last_selected_terminal === 'undefined') {
