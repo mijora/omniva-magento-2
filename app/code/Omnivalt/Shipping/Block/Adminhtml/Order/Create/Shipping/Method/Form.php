@@ -15,10 +15,21 @@ class Form extends \Magento\Sales\Block\Adminhtml\Order\Create\Shipping\Method\F
     protected $omnivaltCarrier;
     
     public function __construct(
+        \Magento\Backend\Block\Template\Context $context,
+        \Magento\Backend\Model\Session\Quote $sessionQuote,
+        \Magento\Sales\Model\AdminOrder\Create $orderCreate,
+        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
+        \Magento\Tax\Helper\Data $taxData,
         Carrier $omnivaltCarrier
     ) {
         $this->omnivaltCarrier = $omnivaltCarrier;
-        parent::contruct();
+        parent::__construct(
+            $context,
+            $sessionQuote,
+            $orderCreate,
+            $priceCurrency,
+            $taxData
+        );
     }
     
     public function getCurrentTerminal(){

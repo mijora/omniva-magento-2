@@ -2,6 +2,7 @@
 
 ### Unreleased
 Created an error message that COD payment is not available when sending to Matkahuolto parcel terminal in Finland.
+Fixed reorder when Omniva module is active.
 
 ### Version 1.2.17
 Added support to send to FI parcel terminals
