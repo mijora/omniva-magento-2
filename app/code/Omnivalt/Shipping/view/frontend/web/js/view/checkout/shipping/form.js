@@ -81,7 +81,7 @@ define([
                     omnivadata.text_show_more = $.mage.__('Show more');
                     omnivadata.postcode = quote.shippingAddress().postcode;
 
-                    if (omnivadata.omniva_current_country == 'FI') {
+                    if (this.isMatkahuolto()) {
                         omnivadata.text_title = $.mage.__('Matkahuolto parcel terminals');
                     }
 
@@ -130,6 +130,16 @@ define([
                 */
             });
 
+            this.btnIconUrl = ko.computed(function() {
+                var dir = 'Omnivalt_Shipping/css/';
+                var icon = 'sasi.png';
+                if (this.isMatkahuolto()) {
+                    icon = 'sasi_mh.svg';
+                }
+
+                return dir + icon;
+            }, this);
+
             return this;
         },
 
@@ -158,6 +168,21 @@ define([
             }
 
             return parcelTerminal;
+        },
+
+        isMatkahuolto: function() {
+            if (typeof quote === 'undefined') {
+                return false;
+            }
+            if (quote.shippingAddress() == null) {
+                return false;
+            }
+
+            if (quote.shippingAddress().countryId == 'FI') {
+                return true;
+            }
+
+            return false;
         },
 
         initSelector: function() {

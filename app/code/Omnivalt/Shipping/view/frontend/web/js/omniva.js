@@ -430,11 +430,15 @@ var omniva_last_selected_terminal = '';
                     iconAnchor:   [16, 32]
                 }
             });
+
+          var terminalIconFile = "sasi.png";
+            if (omnivadata.omniva_current_country == "FI") {
+                terminalIconFile = "sasi_mh.svg";
+            }
             
           
-            terminalIcon = new Icon({iconUrl: omnivadata.omniva_plugin_url+'sasi.png'});
+            terminalIcon = new Icon({iconUrl: omnivadata.omniva_plugin_url + terminalIconFile});
             homeIcon = new Icon2({iconUrl: omnivadata.omniva_plugin_url+'locator_img.png'});
-            
           
           
             jQuery.each( locations, function( key, location ) {
