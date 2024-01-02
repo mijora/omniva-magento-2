@@ -320,6 +320,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     case 'FI':
                         $amount = $this->getConfigData('priceFI_C');
                         $freeFrom = $this->getConfigData('fi_courier_free_shipping_subtotal');
+                        $title = $this->getConfigData('title_matkahuolto');
                         break;
                     case 'LT':
                         $amount = $this->getConfigData('price');
