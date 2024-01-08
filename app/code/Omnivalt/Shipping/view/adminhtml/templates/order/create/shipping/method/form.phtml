@@ -7,6 +7,12 @@
                           $grouped_options = array();
                           
                           foreach ($locs as $loc){
+                            if (is_array($loc) && isset($loc['ZIP'])) {
+                              $loc = (object) $loc;
+                            }
+                            if (!isset($loc->ZIP)) {
+                              continue;
+                            }
                             $key = $loc->ZIP;
                             if (!isset($grouped_options[(string)$loc->A3_NAME]))
                               $grouped_options[(string)$loc->A3_NAME] = array();

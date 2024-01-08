@@ -1,5 +1,10 @@
 # Changelog
 
+### Version 1.2.18
+Created an error message that COD payment is not available when sending to Matkahuolto parcel terminal in Finland.
+Fixed reorder when Omniva module is active.
+Changed that when selecting the delivery country Finland, the parcel terminal map would show the name and logo of Matkahuolto.
+
 ### Version 1.2.17
 Added support to send to FI parcel terminals
 

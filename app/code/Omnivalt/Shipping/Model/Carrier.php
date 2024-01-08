@@ -300,12 +300,12 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $method = $this->_rateMethodFactory->create();
 
             $method->setCarrier('omnivalt');
-            $method->setCarrierTitle($this->getConfigData('title'));
 
             $method->setMethod($allowedMethod);
             $method->setMethodTitle($this->getCode('method', $allowedMethod));
             $amount = false;
             $freeFrom = false;
+            $title = $this->getConfigData('title');
 
             if ($allowedMethod == "COURIER") {
                 switch ($country_id) {
@@ -320,6 +320,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     case 'FI':
                         $amount = $this->getConfigData('priceFI_C');
                         $freeFrom = $this->getConfigData('fi_courier_free_shipping_subtotal');
+                        $title = $this->getConfigData('title_matkahuolto');
                         break;
                     case 'LT':
                         $amount = $this->getConfigData('price');
@@ -339,6 +340,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     case 'FI':
                         $amount = $this->getConfigData('priceFI_pt');
                         $freeFrom = $this->getConfigData('fi_parcel_terminal_free_shipping_subtotal');
+                        $title = $this->getConfigData('title_matkahuolto');
                         break;
                     case 'LT':
                         $amount = $this->getConfigData('price2');
@@ -355,6 +357,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             } elseif ($country_id == "FI" && $company_country != 'EE') {
                 continue;
             }
+
             if ($isFreeEnabled && $packageValue >= $freeFrom && $freeFrom >= 0 && $freeFrom != '') {
                 $amount = 0;
             }
@@ -363,6 +366,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 continue;
             }
 
+            $method->setCarrierTitle($title);
             $method->setPrice($amount);
             $method->setCost($amount);
 
@@ -665,8 +669,11 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $country = $this->getConfigData('company_countrycode');
             $bank_account = $this->getConfigData('cod_bank_account');
 
+            $receiver_country = $request->getRecipientAddressCountryCode();
+
             $payment_method = $order->getPayment()->getMethodInstance()->getCode();
-            $is_cod = $payment_method == 'msp_cashondelivery';
+            $cod_payments = array('msp_cashondelivery', 'cashondelivery');
+            $is_cod = in_array($payment_method, $cod_payments);
 
             $send_method_name = trim($request->getShippingMethod());
             $pickup_method = $this->getConfigData('pickup');
@@ -676,6 +683,11 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 $send_method = 'pt';
             } else if (strtolower($send_method_name) == 'courier_plus') {
                 $send_method = 'cp';
+            }
+
+            if ( $is_cod && $receiver_country == 'FI' && strtolower($send_method_name) == 'parcel_terminal' ) {
+                $result->setErrors('Additional service COD is not available in this country');
+                return $result;
             }
             
             $service = $this->shipping_helper->getShippingService($this, $send_method, $order);
@@ -762,7 +774,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $receiverContact = new Contact();
             $address = new Address();
             $address
-                    ->setCountry($request->getRecipientAddressCountryCode())
+                    ->setCountry($receiver_country)
                     ->setPostcode($request->getRecipientAddressPostalCode())
                     ->setDeliverypoint($request->getRecipientAddressCity())
                     ->setStreet($request->getRecipientAddressStreet1());

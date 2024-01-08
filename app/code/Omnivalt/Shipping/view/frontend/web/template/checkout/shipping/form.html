@@ -9,7 +9,7 @@
                 <option data-bind="value: zip, text: name + ' (' + location +')', attr:{'data-x': x,'data-y': y,'data-comment': comment,'data-name':name,'data-location':location,'data-city':city}" ></option>
             </optgroup>
         </select>
-        <button type="button" class="btn btn-basic btn-sm omniva-btn show-omniva-map" style = "display: none;"><span data-bind="i18n: 'Show in map'"></span> <img data-bind="attr:{src: require.toUrl('Omnivalt_Shipping/css/sasi.png')}"/></button>
+        <button type="button" class="btn btn-basic btn-sm omniva-btn show-omniva-map" style = "display: none;"><span data-bind="i18n: 'Show in map'"></span> <img data-bind="attr:{src: require.toUrl(btnIconUrl())}"/></button>
     </div>
     
 </div>
@@ -17,7 +17,7 @@
     <div class="omniva-modal-content">
             <div class="omniva-modal-header">
             <span class="close" id="terminalsModal">&times;</span>
-            <h5 style="display: inline"  data-bind="i18n: 'Omniva parcel terminals'"></h5>
+            <h5 style="display: inline"  data-bind=""></h5>
             </div>
             <div class="omniva-modal-body" style="/*overflow: hidden;*/">
                 <div id = "omnivaMapContainer"></div>
