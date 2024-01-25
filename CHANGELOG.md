@@ -1,6 +1,6 @@
 # Changelog
 
-### Unreleased
+### Version 1.2.19
 Fixed getting API URL from settings.
 
 ### Version 1.2.18
