@@ -482,9 +482,10 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         try {
             $username = $this->getConfigData('account');
             $password = $this->getConfigData('password');
+            $api_url = $this->getConfigData('production_webservices_url');
             
             $tracking = new Tracking();
-            $tracking->setAuth($username, $password);
+            $tracking->setAuth($username, $password, $api_url);
 
             $results = $tracking->getTracking($trackings);
 
@@ -543,6 +544,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         try {
             $username = $this->getConfigData('account');
             $password = $this->getConfigData('password');
+            $api_url = $this->getConfigData('production_webservices_url');
             
             $pickStart = $this->getConfigData('pick_up_time_start')?$this->getConfigData('pick_up_time_start'):'8:00';
             $pickFinish = $this->getConfigData('pick_up_time_finish')?$this->getConfigData('pick_up_time_finish'):'17:00';
@@ -569,7 +571,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     ->setPersonName($name);
 
             $call = new CallCourier();
-            $call->setAuth($username, $password);
+            $call->setAuth($username, $password, $api_url);
             $call->setSender($senderContact);
             $call->setEarliestPickupTime($pickStart);
             $call->setLatestPickupTime($pickFinish);
@@ -609,9 +611,10 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         try {
             $username = $this->getConfigData('account');
             $password = $this->getConfigData('password');
+            $api_url = $this->getConfigData('production_webservices_url');
 
             $label = new Label();
-            $label->setAuth($username, $password);
+            $label->setAuth($username, $password, $api_url);
             $labels = $label->downloadLabels($barcodes, false, 'S');
             if ($labels) {
                 $result->setShippingLabelContent($labels);
@@ -629,9 +632,10 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         try {
             $username = $this->getConfigData('account');
             $password = $this->getConfigData('password');
+            $api_url = $this->getConfigData('production_webservices_url');
 
             $label = new Label();
-            $label->setAuth($username, $password);
+            $label->setAuth($username, $password, $api_url);
             $combine = $this->getConfigData('combine_labels');
             $labels = $label->downloadLabels($barcodes, $combine, 'I');
             if ($labels) {
@@ -660,6 +664,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $order = $request->getOrderShipment()->getOrder();
             $username = $this->getConfigData('account');
             $password = $this->getConfigData('password');
+            $api_url = $this->getConfigData('production_webservices_url');
 
             $name = $this->getConfigData('cod_company');
             $phone = $this->getConfigData('company_phone');
@@ -805,7 +810,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $shipment->setPackages([$package]);
 
             //set auth data
-            $shipment->setAuth($username, $password);
+            $shipment->setAuth($username, $password, $api_url);
             $shipment_result = $shipment->registerShipment();
             if (isset($shipment_result['barcodes'])) {
                 foreach ($shipment_result['barcodes'] as $_barcode) {
