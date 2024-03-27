@@ -64,6 +64,7 @@ class ShippingMethod {
                 'LT' => 'classic',
                 'LV' => 'classic',
                 'EE' => 'classic',
+                'FI' => 'finland',
                 'call' => 'classic',
             ),
             'comment_lang' => 'lav',

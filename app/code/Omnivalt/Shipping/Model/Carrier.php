@@ -354,7 +354,11 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 } else {
                     continue;
                 }
-            } elseif ($country_id == "FI" && $company_country != 'EE') {
+            }
+            if ($country_id == "FI" && !in_array($company_country, ['LV', 'EE'])) {
+                continue;
+            }
+            if ($country_id == "FI" && $company_country != 'EE' && $allowedMethod == "COURIER") {
                 continue;
             }
 
