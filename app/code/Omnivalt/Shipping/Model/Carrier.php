@@ -356,8 +356,6 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 } else {
                     continue;
                 }
-            } elseif ($country_id == "FI" && $company_country != 'EE') {
-                continue;
             }
             if ($isFreeEnabled && $packageValue >= $freeFrom && $freeFrom >= 0 && $freeFrom != '') {
                 $amount = 0;
@@ -693,7 +691,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $bank_account = $this->getConfigData('cod_bank_account');
 
             $payment_method = $order->getPayment()->getMethodInstance()->getCode();
-            $is_cod = $payment_method == 'msp_cashondelivery';
+            $is_cod = in_array($payment_method, ['cashondelivery', 'msp_cashondelivery']);
 
             $send_method_name = trim($request->getShippingMethod());
             $pickup_method = $this->getConfigData('pickup');
@@ -818,7 +816,12 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $package->setSenderContact($senderContact);
 
             // Simulate multi-package request.
-            $shipment->setPackages([$package]);
+            $labels_count = isset($_orderServices['labels_count']) ? $_orderServices['labels_count'] : 1;
+            $packages = [];
+            for ($i=0; $i<$labels_count; $i++) {
+                $packages[] = $package;
+            }
+            $shipment->setPackages($packages);
 
             //set auth data
             $shipment->setAuth($username, $password);
