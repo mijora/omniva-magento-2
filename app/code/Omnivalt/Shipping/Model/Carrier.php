@@ -359,9 +359,6 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     continue;
                 }
             }
-            if ($country_id == "FI" && !in_array($company_country, ['LV', 'EE'])) {
-                continue;
-            }
             if ($country_id == "FI" && $company_country != 'EE' && $allowedMethod == "COURIER") {
                 continue;
             }
@@ -708,8 +705,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $receiver_country = $request->getRecipientAddressCountryCode();
 
             $payment_method = $order->getPayment()->getMethodInstance()->getCode();
-            $cod_payments = array('msp_cashondelivery', 'cashondelivery');
-            $is_cod = in_array($payment_method, $cod_payments);
+            $is_cod = in_array($payment_method, ['cashondelivery', 'msp_cashondelivery']);
 
             $send_method_name = trim($request->getShippingMethod());
             $pickup_method = $this->getConfigData('pickup');
@@ -839,7 +835,12 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $package->setSenderContact($senderContact);
 
             // Simulate multi-package request.
-            $shipment->setPackages([$package]);
+            $labels_count = isset($_orderServices['labels_count']) ? $_orderServices['labels_count'] : 1;
+            $packages = [];
+            for ($i=0; $i<$labels_count; $i++) {
+                $packages[] = $package;
+            }
+            $shipment->setPackages($packages);
 
             //set auth data
             $shipment->setAuth($username, $password, $api_url);

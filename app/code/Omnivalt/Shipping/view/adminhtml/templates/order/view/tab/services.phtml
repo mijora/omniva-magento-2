@@ -40,7 +40,10 @@
                 <label class="admin__field-label" for="service-<?php echo $service['value']; ?>"><?php echo $service['title']; ?></label>
             </div>
             <?php endforeach; ?>
-            
+            <div class="admin__field admin__field-option">
+                <input name="omniva_labels_count" min="1" max="20" type="number" id="service-labels-count" class="admin__control-text" value="<?php echo isset($_orderServices['labels_count']) ? $_orderServices['labels_count'] : 1; ?>"> 
+                <label class="admin__field-label" for="service-labels-count">Labels count</label>
+            </div>
             <input type="hidden" name="order_id" value="<?= /* @escapeNotVerified */ $_order->getId() ?>"/>
         </div>
         <br/>
