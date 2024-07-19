@@ -744,6 +744,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                         break;
                 }
             }
+            $is_terminal = $send_method_name == 'PARCEL_TERMINAL';
 
 
 
@@ -759,12 +760,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     ->setFileId(date('Ymdhis'));
             $shipment->setShipmentHeader($shipmentHeader)
                 ->setComment('');
-
-            $package = new Package();
-            $package
-                    ->setId($order->getId())
-                    ->setService($service);
-            
+                       
             $additionalServices = [];
             if ($service == "PA" || $service == "PU" || $service == 'CD') {
                 $additionalServices[] = (new AdditionalService())->setServiceCode('ST');
@@ -774,35 +770,24 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             }
             // set fragile or/adn 18+ service
             $this->setOrderServices($order);
-
+            $is_fragile = false;
             $_orderServices = json_decode($order->getOmnivaltServices() ?? '[]', true);
             if (isset($_orderServices['services']) && is_array($_orderServices['services'])) {
                 foreach ($_orderServices['services'] as $_service) {
                     $additionalServices[] = (new AdditionalService())->setServiceCode($_service);
+                    if ($_service == 'BC') {
+                        $is_fragile = true;
+                    }
                 }
             }
-            
-            $package->setAdditionalServices($additionalServices);
-
             $measures = new Measures();
-            $measures
-                    ->setWeight($request->getPackageWeight());
+            $measures->setWeight($request->getPackageWeight())
             /*
               ->setVolume(9)
               ->setHeight(2)
-              ->setWidth(3); */
-            $package->setMeasures($measures);
+              ->setWidth(3); */;
 
-            //set COD
-            if ($is_cod) {
-                $cod = new Cod();
-                $cod
-                        ->setAmount(round($request->getOrderShipment()->getOrder()->getGrandTotal(), 2))
-                        ->setBankAccount($bank_account)
-                        ->setReceiverName($name)
-                        ->setReferenceNumber($this->getReferenceNumber($order->getId()));
-                $package->setCod($cod);
-            }
+              
             // Receiver contact data
             $receiverContact = new Contact();
             $address = new Address();
@@ -818,7 +803,6 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     ->setAddress($address)
                     ->setMobile($request->getRecipientContactPhoneNumber())
                     ->setPersonName($request->getRecipientContactPersonName());
-            $package->setReceiverContact($receiverContact);
 
             // Sender contact data
             $sender_address = new Address();
@@ -832,12 +816,42 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     ->setAddress($sender_address)
                     ->setMobile($phone)
                     ->setPersonName($name);
-            $package->setSenderContact($senderContact);
-
-            // Simulate multi-package request.
+            
             $labels_count = isset($_orderServices['labels_count']) ? $_orderServices['labels_count'] : 1;
+
             $packages = [];
             for ($i=0; $i<$labels_count; $i++) {
+            
+                $package_id = $order->getId();
+                if ($is_terminal) {
+                    $package_id .= '-' . $i;
+                }
+                $package = new Package();
+                $package
+                        ->setId($package_id)
+                        ->setService($service);
+                if ($i == 0 || $is_terminal) {        
+                    $package->setAdditionalServices($additionalServices);
+                } elseif ($is_fragile) {
+                    $package->setAdditionalServices([(new AdditionalService())->setServiceCode('BC')]);
+                }
+
+                $package->setMeasures($measures);
+
+                //set COD
+                if ($is_cod && ($i == 0 || $is_terminal)) {
+                    $cod = new Cod();
+                    $cod
+                            ->setAmount(round($request->getOrderShipment()->getOrder()->getGrandTotal(), 2))
+                            ->setBankAccount($bank_account)
+                            ->setReceiverName($name)
+                            ->setReferenceNumber($this->getReferenceNumber($order->getId()));
+                    $package->setCod($cod);
+                }
+                $package->setReceiverContact($receiverContact);
+
+                $package->setSenderContact($senderContact);
+                
                 $packages[] = $package;
             }
             $shipment->setPackages($packages);
