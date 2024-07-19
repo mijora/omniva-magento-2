@@ -804,14 +804,14 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             for ($i=0; $i<$labels_count; $i++) {
             
                 $package_id = $order->getId();
-                if ($is_terminal) {
+                if ($is_terminal || !$is_cod) {
                     $package_id .= '-' . $i;
                 }
                 $package = new Package();
                 $package
                         ->setId($package_id)
                         ->setService($service);
-                if ($i == 0 || $is_terminal) {        
+                if ($i == 0 || $is_terminal || !$is_cod) {        
                     $package->setAdditionalServices($additionalServices);
                 } elseif ($is_fragile) {
                     $package->setAdditionalServices([(new AdditionalService())->setServiceCode('BC')]);
