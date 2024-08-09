@@ -29,6 +29,7 @@ use Mijora\Omniva\Shipment\Label;
 use Mijora\Omniva\Shipment\Tracking;
 use Mijora\Omniva\Shipment\CallCourier;
 use Omnivalt\Shipping\Model\LabelHistoryFactory;
+use Omnivalt\Shipping\Model\CourierRequestFactory;
 
 /**
  * Omnivalt shipping implementation
@@ -163,6 +164,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
     protected $variableFactory;
     protected $omnivaPickupPoints;
     protected $labelhistoryFactory;
+    protected $courierRequestFactory;
     protected $shipping_helper;
 
     /**
@@ -213,6 +215,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             \Magento\Variable\Model\VariableFactory $variableFactory,
             PickupPoints $omnivaPickupPoints,
             LabelHistoryFactory $labelhistoryFactory,
+            CourierRequestFactory $courierRequestFactory,
             \Omnivalt\Shipping\Model\Helper\ShippingMethod $shipping_helper,
             array $data = []
     ) {
@@ -224,6 +227,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         $this->variableFactory = $variableFactory;
         $this->omnivaPickupPoints = $omnivaPickupPoints;
         $this->labelhistoryFactory = $labelhistoryFactory;
+        $this->courierRequestFactory = $courierRequestFactory;
         $this->shipping_helper = $shipping_helper;
         parent::__construct(
                 $scopeConfig,
@@ -354,12 +358,6 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 } else {
                     continue;
                 }
-            }
-            if ($country_id == "FI" && !in_array($company_country, ['LV', 'EE'])) {
-                continue;
-            }
-            if ($country_id == "FI" && $company_country != 'EE' && $allowedMethod == "COURIER") {
-                continue;
             }
 
             if ($isFreeEnabled && $packageValue >= $freeFrom && $freeFrom >= 0 && $freeFrom != '') {
@@ -544,6 +542,21 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         return $arr;
     }
 
+    public function cancelOmnivaPickup($id) {
+        try {
+            $username = $this->getConfigData('account');
+            $password = $this->getConfigData('password');
+
+            $call = new CallCourier();
+            $call->setAuth($username, $password);
+            $is_canceled = $call->cancelCourierOmx($id);
+            return $is_canceled ? true : false;
+        } catch (\Exception $e) {
+            
+        }
+        return false;
+    }
+
     public function callOmniva() {
         try {
             $username = $this->getConfigData('account');
@@ -575,18 +588,26 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     ->setPersonName($name);
 
             $call = new CallCourier();
-            $call->setAuth($username, $password, $api_url);
-            $call->setSender($senderContact);
-            $call->setEarliestPickupTime($pickStart);
-            $call->setLatestPickupTime($pickFinish);
+            $call
+                ->setAuth($username, $password)
+                ->setSender($senderContact)
+                ->setEarliestPickupTime($pickStart)
+                ->setLatestPickupTime($pickFinish)
+                ->setComment('');
             $call_result = $call->callCourier();
-            if ($call_result) {
+            if ($call->getResponseCallNumber()) {
+                $model = $this->courierRequestFactory->create();
+                $data = [
+                    'omniva_request_id' => $call->getResponseCallNumber()
+                ];
+                $model->setData($data);
+                $model->save();
                 return true;
             } else {
                 return false;
             }
         } catch (\Exception $e) {
-            
+
         }
         return false;
     }
@@ -681,8 +702,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $receiver_country = $request->getRecipientAddressCountryCode();
 
             $payment_method = $order->getPayment()->getMethodInstance()->getCode();
-            $cod_payments = array('msp_cashondelivery', 'cashondelivery');
-            $is_cod = in_array($payment_method, $cod_payments);
+            $is_cod = in_array($payment_method, ['cashondelivery', 'msp_cashondelivery']);
 
             $send_method_name = trim($request->getShippingMethod());
             $pickup_method = $this->getConfigData('pickup');
@@ -721,6 +741,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                         break;
                 }
             }
+            $is_terminal = $send_method_name == 'PARCEL_TERMINAL';
 
 
 
@@ -734,13 +755,9 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $shipmentHeader
                     ->setSenderCd($username)
                     ->setFileId(date('Ymdhis'));
-            $shipment->setShipmentHeader($shipmentHeader);
-
-            $package = new Package();
-            $package
-                    ->setId($order->getId())
-                    ->setService($service);
-            
+            $shipment->setShipmentHeader($shipmentHeader)
+                ->setComment('');
+                       
             $additionalServices = [];
             if ($service == "PA" || $service == "PU" || $service == 'CD') {
                 $additionalServices[] = (new AdditionalService())->setServiceCode('ST');
@@ -750,35 +767,24 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             }
             // set fragile or/adn 18+ service
             $this->setOrderServices($order);
-
+            $is_fragile = false;
             $_orderServices = json_decode($order->getOmnivaltServices() ?? '[]', true);
             if (isset($_orderServices['services']) && is_array($_orderServices['services'])) {
                 foreach ($_orderServices['services'] as $_service) {
                     $additionalServices[] = (new AdditionalService())->setServiceCode($_service);
+                    if ($_service == 'BC') {
+                        $is_fragile = true;
+                    }
                 }
             }
-            
-            $package->setAdditionalServices($additionalServices);
-
             $measures = new Measures();
-            $measures
-                    ->setWeight($request->getPackageWeight());
+            $measures->setWeight($request->getPackageWeight())
             /*
               ->setVolume(9)
               ->setHeight(2)
-              ->setWidth(3); */
-            $package->setMeasures($measures);
+              ->setWidth(3); */;
 
-            //set COD
-            if ($is_cod) {
-                $cod = new Cod();
-                $cod
-                        ->setAmount(round($request->getOrderShipment()->getOrder()->getGrandTotal(), 2))
-                        ->setBankAccount($bank_account)
-                        ->setReceiverName($name)
-                        ->setReferenceNumber($this->getReferenceNumber($order->getId()));
-                $package->setCod($cod);
-            }
+              
             // Receiver contact data
             $receiverContact = new Contact();
             $address = new Address();
@@ -794,7 +800,6 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     ->setAddress($address)
                     ->setMobile($request->getRecipientContactPhoneNumber())
                     ->setPersonName($request->getRecipientContactPersonName());
-            $package->setReceiverContact($receiverContact);
 
             // Sender contact data
             $sender_address = new Address();
@@ -808,10 +813,45 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     ->setAddress($sender_address)
                     ->setMobile($phone)
                     ->setPersonName($name);
-            $package->setSenderContact($senderContact);
+            
+            $labels_count = isset($_orderServices['labels_count']) ? $_orderServices['labels_count'] : 1;
 
-            // Simulate multi-package request.
-            $shipment->setPackages([$package]);
+            $packages = [];
+            for ($i=0; $i<$labels_count; $i++) {
+            
+                $package_id = $order->getId();
+                if ($is_terminal || !$is_cod) {
+                    $package_id .= '-' . $i;
+                }
+                $package = new Package();
+                $package
+                        ->setId($package_id)
+                        ->setService($service);
+                if ($i == 0 || $is_terminal || !$is_cod) {        
+                    $package->setAdditionalServices($additionalServices);
+                } elseif ($is_fragile) {
+                    $package->setAdditionalServices([(new AdditionalService())->setServiceCode('BC')]);
+                }
+
+                $package->setMeasures($measures);
+
+                //set COD
+                if ($is_cod && ($i == 0 || $is_terminal)) {
+                    $cod = new Cod();
+                    $cod
+                            ->setAmount(round($request->getOrderShipment()->getOrder()->getGrandTotal(), 2))
+                            ->setBankAccount($bank_account)
+                            ->setReceiverName($name)
+                            ->setReferenceNumber($this->getReferenceNumber($order->getId()));
+                    $package->setCod($cod);
+                }
+                $package->setReceiverContact($receiverContact);
+
+                $package->setSenderContact($senderContact);
+                
+                $packages[] = $package;
+            }
+            $shipment->setPackages($packages);
 
             //set auth data
             $shipment->setAuth($username, $password, $api_url);
