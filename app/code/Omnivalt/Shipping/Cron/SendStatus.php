@@ -20,7 +20,12 @@ class SendStatus
 		public function execute() {
 			try {
 				$result = $this->status_sender->sendStatus();
-				$this->_logger->info('Omniva status sent  ' . json_encode($result) ,  );
+				//$this->_logger->info($result  );
+				if ($result) {
+					$this->_logger->info('Omniva status sent  '  );
+				} else {
+					$this->_logger->info('Omniva status not sent  '  );
+				}
 			} catch (\Throwable $e) {
 				$this->_logger->info($e->getMessage());
 			}	
