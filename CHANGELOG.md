@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 1.3.1
+Fixed courier call time.
+Added sending of shipments statistic to Omniva PowerBi
+
 ### Version 1.3.0
 The module is adapted to work with Omniva OMX
 
