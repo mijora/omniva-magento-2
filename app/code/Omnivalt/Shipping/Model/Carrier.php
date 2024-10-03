@@ -557,6 +557,10 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         return false;
     }
 
+    private function setUtcTime($time) {
+        return gmdate('H:i', strtotime($time));
+    }
+
     public function callOmniva() {
         try {
             $username = $this->getConfigData('account');
@@ -591,8 +595,8 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $call
                 ->setAuth($username, $password)
                 ->setSender($senderContact)
-                ->setEarliestPickupTime($pickStart)
-                ->setLatestPickupTime($pickFinish)
+                ->setEarliestPickupTime($this->setUtcTime($pickStart))
+                ->setLatestPickupTime($this->setUtcTime($pickFinish))
                 ->setComment('');
             $call_result = $call->callCourier();
             if ($call->getResponseCallNumber()) {
