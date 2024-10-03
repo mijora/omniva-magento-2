@@ -4,7 +4,12 @@ namespace Omnivalt\Shipping\Model\Helper;
 
 class StatusSender {
 
-  const ENDPOINT = 'https://pre-flow.omniva.ee/api/v1/data'; //https://flow.omniva.ee/api/v1/data
+  /**
+   * PowerBi endpoint
+   * LIVE: https://flow.omniva.ee/api/v1/data
+   * TEST: https://pre-flow.omniva.ee/api/v1/data
+   */
+  const ENDPOINT = 'https://flow.omniva.ee/api/v1/data';
 
   protected $productMetadata;
   protected $scopeConfig;
