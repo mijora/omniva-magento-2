@@ -50,7 +50,7 @@ class ReprintMassLabels extends \Magento\Sales\Controller\Adminhtml\Order\Abstra
             'omnivalt_PARCEL_TERMINAL',
             'omnivalt_COURIER',
             'omnivalt_INTERNATIONAL_ECONOMY',
-            'omnivalt_INTERNATIONAL_STANDART',
+            'omnivalt_INTERNATIONAL_STANDARD',
             'omnivalt_INTERNATIONAL_PREMIUM',
         );
         $order_shipping_method = $order->getData('shipping_method');

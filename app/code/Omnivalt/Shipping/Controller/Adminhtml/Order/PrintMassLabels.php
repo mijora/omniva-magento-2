@@ -52,7 +52,7 @@ class PrintMassLabels extends \Magento\Sales\Controller\Adminhtml\Order\Abstract
             'omnivalt_COURIER',
             'omnivalt_COURIER_PLUS',
             'omnivalt_INTERNATIONAL_ECONOMY',
-            'omnivalt_INTERNATIONAL_STANDART',
+            'omnivalt_INTERNATIONAL_STANDARD',
             'omnivalt_INTERNATIONAL_PREMIUM',
         );
         $order_shipping_method = $order->getData('shipping_method');
