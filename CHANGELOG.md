@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 1.3.2
+Added international shipping support
+
 ### Version 1.3.1
 Fixed courier call time.
 Added sending of shipments statistic to Omniva PowerBi
