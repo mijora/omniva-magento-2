@@ -47,6 +47,9 @@ class Manifest extends \Magento\Framework\View\Element\Template
         if ($order_shipping_method === 'omnivalt_parcel_terminal') {
             return __('Parcel terminal') . ': '. $this->getTerminal($order);
         }
+        if (stripos($order_shipping_method, 'international_') !== false) {
+            return __('International') . ' '. strtoupper(str_ireplace('omnivalt_international_', '', $order_shipping_method));
+        }
         return '-';
     }
 

@@ -22,12 +22,14 @@ use Mijora\Omniva\Shipment\Package\Contact;
 use Mijora\Omniva\Shipment\Package\Measures;
 use Mijora\Omniva\Shipment\Package\Cod;
 use Mijora\Omniva\Shipment\Package\Package;
+use Mijora\Omniva\Shipment\Package\ServicePackage;
 use Mijora\Omniva\Shipment\Shipment;
 use Mijora\Omniva\Shipment\ShipmentHeader;
 use Mijora\Omniva\Locations\PickupPoints;
 use Mijora\Omniva\Shipment\Label;
 use Mijora\Omniva\Shipment\Tracking;
 use Mijora\Omniva\Shipment\CallCourier;
+use Mijora\Omniva\ServicePackageHelper\ServicePackageHelper;
 use Omnivalt\Shipping\Model\LabelHistoryFactory;
 use Omnivalt\Shipping\Model\CourierRequestFactory;
 
@@ -287,6 +289,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         $result = $this->_rateFactory->create();
         //$packageValue = $request->getBaseCurrency()->convert($request->getPackageValueWithDiscount(), $request->getPackageCurrency());
         $packageValue = $request->getPackageValueWithDiscount();
+        $packageWeight = $request->getPackageWeight();
         $this->_updateFreeMethodQuote($request);
         $isFreeEnabled = $this->getConfigData('free_shipping_enable');
         $allowedMethods = explode(',', $this->getConfigData('allowed_methods'));
@@ -371,9 +374,31 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $method->setCarrierTitle($title);
             $method->setPrice($amount);
             $method->setCost($amount);
-
             $result->append($method);
         }
+
+        // Intenational shipping settings
+        if (in_array('INTERNATIONAL', $allowedMethods) && $country_service = ServicePackageHelper::getCountryOptions($country_id)) {
+            foreach ($country_service['package'] as $service => $service_data) {
+                if ($service_data['maxWeightKg'] < $packageWeight) {
+                    continue;
+                }
+                $amount = $this->getConfigData('int_' . $service);
+                if (!$amount && $amount != 0) {
+                    continue;
+                }
+                $method = $this->_rateMethodFactory->create();
+                $method->setCarrier('omnivalt');
+                $title = $this->getConfigData('title');
+                $method->setMethod('INTERNATIONAL_' . strtoupper($service));
+                $method->setMethodTitle($this->getCode('method', $allowedMethod) . ' ' . strtoupper($service));
+                $method->setCarrierTitle($title);
+                $method->setPrice($amount);
+                $method->setCost($amount);
+                $result->append($method);
+            }
+        }
+
         return $result;
     }
 
@@ -401,13 +426,9 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 'COURIER' => __('Courier'),
                 'PARCEL_TERMINAL' => __('Parcel terminal'),
                 'COURIER_PLUS' => __('Courier Plus'),
+                'INTERNATIONAL' => __('International'),
             ],
-            'country' => [
-                'EE' => __('Estonia'),
-                'LV' => __('Latvia'),
-                'LT' => __('Lithuania'),
-                'FI' => __('Finland')
-            ],
+            'country' => $this->getCountriesList(),
             'tracking' => [
             ],
             'terminal' => [],
@@ -439,6 +460,24 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         } else {
             return $codes[$type][$code];
         }
+    }
+
+    private function getCountriesList($with_baltic = true) {
+        $services = ServicePackageHelper::getServices();
+        if ($with_baltic) {
+            $countires = [
+                'EE' => __('Estonia'),
+                'LV' => __('Latvia'),
+                'LT' => __('Lithuania'),
+                'FI' => __('Finland')
+            ];
+        } else {
+            $countires = [];
+        }
+        foreach ($services as $service) {
+            $countires[$service['iso']] = $service['country'];
+        }
+        return $countires;
     }
 
     public function getTerminalAddress($terminal_id) {
@@ -722,31 +761,33 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 $result->setErrors('Additional service COD is not available in this country');
                 return $result;
             }
-            
-            $service = $this->shipping_helper->getShippingService($this, $send_method, $order);
-            
-            //in case cannot get correct service
-            if ($service === false || is_array($service)) {
-                switch ($pickup_method . ' ' . $send_method_name) {
-                    case 'COURIER PARCEL_TERMINAL':
-                        $service = "PU";
-                        break;
-                    case 'COURIER COURIER':
-                        $service = "QH";
-                        break;
-                    case 'PARCEL_TERMINAL COURIER':
-                        $service = "PK";
-                        break;
-                    case 'PARCEL_TERMINAL PARCEL_TERMINAL':
-                        $service = "PA";
-                        break;
-                    default:
-                        $service = "";
-                        break;
+            $is_international = (stripos($send_method_name, 'international') !== false);
+            $service = false;
+            if (!$is_international) {
+                $service = $this->shipping_helper->getShippingService($this, $send_method, $order);
+                
+                //in case cannot get correct service
+                if ($service === false || is_array($service)) {
+                    switch ($pickup_method . ' ' . $send_method_name) {
+                        case 'COURIER PARCEL_TERMINAL':
+                            $service = "PU";
+                            break;
+                        case 'COURIER COURIER':
+                            $service = "QH";
+                            break;
+                        case 'PARCEL_TERMINAL COURIER':
+                            $service = "PK";
+                            break;
+                        case 'PARCEL_TERMINAL PARCEL_TERMINAL':
+                            $service = "PA";
+                            break;
+                        default:
+                            $service = "";
+                            break;
+                    }
                 }
             }
             $is_terminal = $send_method_name == 'PARCEL_TERMINAL';
-
 
 
             $shipment = new Shipment();
@@ -828,9 +869,18 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     $package_id .= '-' . $i;
                 }
                 $package = new Package();
-                $package
+                if ($is_international) {
+                    $package
+                        ->setId($package_id . '-' . $i)
+                        ->setService(Package::MAIN_SERVICE_PARCEL, Package::CHANNEL_COURIER)
+                        ->setServicePackage(
+                            (new ServicePackage(str_ireplace('international_', '', $send_method_name)))
+                        );
+                } else {
+                    $package
                         ->setId($package_id)
                         ->setService($service);
+                }
                 if ($i == 0 || $is_terminal || !$is_cod) {        
                     $package->setAdditionalServices($additionalServices);
                 } elseif ($is_fragile) {

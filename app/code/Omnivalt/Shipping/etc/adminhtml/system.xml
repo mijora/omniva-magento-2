@@ -180,6 +180,18 @@
                         <field id="free_shipping_enable">1</field>
                     </depends>
                 </field>
+                <field id="int_economy" translate="label" type="text" sortOrder="196" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>International Economy price</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                </field>
+                <field id="int_standard" translate="label" type="text" sortOrder="197" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>International Standard price</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                </field>
+                <field id="int_premium" translate="label" type="text" sortOrder="198" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>International Premium price</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                </field>
                 <!-- Combine -->
                 <field id="combine_labels" translate="label" type="select" sortOrder="201" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Combine labels</label>
