@@ -539,15 +539,15 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     $shipmentEventArray['deliverylocation'] = isset($event['location']['locationName']) ? $event['location']['locationName'] : '-';
                     $packageProgress[] = $shipmentEventArray;
                 }
-                $resultArr[] = ['progressdetail' => $packageProgress];
+                $resultArr[$trackings[0]] = ['progressdetail' => $packageProgress];
             }
 
             if (!empty($resultArr)) {
-                foreach ($resultArr as $data) {
+                foreach ($resultArr as $trackNum => $data) {
                     $tracking = $this->_trackStatusFactory->create();
                     $tracking->setCarrier($this->_code);
                     $tracking->setCarrierTitle($this->getConfigData('title'));
-                    $tracking->setTracking($trackings[0]);
+                    $tracking->setTracking($trackNum);
                     $tracking->addData($data);
                     $result->append($tracking);
                 }
