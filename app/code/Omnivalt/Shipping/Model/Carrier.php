@@ -523,29 +523,23 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         try {
             $username = $this->getConfigData('account');
             $password = $this->getConfigData('password');
-            $api_url = $this->getConfigData('production_webservices_url');
             
-            $tracking = new Tracking();
-            $tracking->setAuth($username, $password, $api_url);
+            $api_tracking = new Tracking();
+            $api_tracking->setAuth($username, $password);
 
-            $results = $tracking->getTracking($trackings);
+            $results = $api_tracking->getTrackingOmx($trackings[0]);
 
             if (is_array($results)) {
-                foreach ($results as $barcode => $tracking_data) {
-                    $awbinfoData = [];
-                    $packageProgress = [];
-
-                    foreach ($tracking_data as $data) {
-                        $shipmentEventArray = [];
-                        $shipmentEventArray['activity'] = $data['state'];
-                        $shipmentEventArray['deliverydate'] = $data['date']->format('Y-m-d'); //date("Y-m-d", strtotime((string)$awbinfo->eventDate));
-                        $shipmentEventArray['deliverytime'] = $data['date']->format('H:i:s'); //date("H:i:s", strtotime((string)$awbinfo->eventDate));
-                        $shipmentEventArray['deliverylocation'] = $data['event'];
-                        $packageProgress[] = $shipmentEventArray;
-                    }
-                    $awbinfoData['progressdetail'] = $packageProgress;
-                    $resultArr[$barcode] = $awbinfoData;
+                $packageProgress = [];
+                foreach ($results as $event) {
+                    $shipmentEventArray = [];
+                    $shipmentEventArray['activity'] = $event['eventName'];
+                    $shipmentEventArray['deliverydate'] = date('Y-m-d', strtotime($event['eventDate']));
+                    $shipmentEventArray['deliverytime'] = date('H:i:s', strtotime($event['eventDate']));
+                    $shipmentEventArray['deliverylocation'] = isset($event['location']['locationName']) ? $event['location']['locationName'] : '-';
+                    $packageProgress[] = $shipmentEventArray;
                 }
+                $resultArr[$trackings[0]] = ['progressdetail' => $packageProgress];
             }
 
             if (!empty($resultArr)) {
