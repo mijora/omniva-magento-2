@@ -1,5 +1,9 @@
 # Changelog
 
+### Unreleased
+Fixed syntax error in statistic send.
+Added platform and version identification to all requests to the Omniva server.
+
 ### Version 1.3.3
 Use OMX for shipment tracking
 
