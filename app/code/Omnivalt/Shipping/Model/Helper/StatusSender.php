@@ -137,7 +137,7 @@ class StatusSender {
   private function getConfigData($value) {
     return $this->scopeConfig->getValue( 
       'carriers/omnivalt/' . $value, 
-      \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 
+      \Magento\Store\Model\ScopeInterface::SCOPE_STORE
     ); 
   }
 

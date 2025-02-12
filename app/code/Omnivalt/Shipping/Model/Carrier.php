@@ -8,6 +8,7 @@
 
 namespace Omnivalt\Shipping\Model;
 
+use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\Module\Dir;
 use Magento\Framework\Xml\Security;
 use Magento\Quote\Model\Quote\Address\RateRequest;
@@ -42,6 +43,12 @@ use Omnivalt\Shipping\Model\CourierRequestFactory;
  */
 class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\Carrier\CarrierInterface
 {
+    /**
+     * Module name
+     * 
+     * @var string
+     */
+    const MODULE = 'Omnivalt_Shipping';
 
     /**
      * Code of the carrier
@@ -73,6 +80,11 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         'RATED_LIST_SHIPMENT',
         'PAYOR_LIST_SHIPMENT',
     ];
+
+    /**
+     * @var ModuleListInterface
+     */
+    protected $_moduleList;
 
     /**
      * Rate request data
@@ -193,6 +205,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
+            ModuleListInterface $moduleList,
             \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
             \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory $rateErrorFactory,
             \Psr\Log\LoggerInterface $logger,
@@ -222,7 +235,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             array $data = []
     ) {
         $this->_checkoutSession = $checkoutSession;
-
+        $this->_moduleList = $moduleList;
         $this->_storeManager = $storeManager;
         $this->_productCollectionFactory = $productCollectionFactory;
         $this->XMLparser = $parser;
@@ -250,6 +263,11 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 $data
         );
 
+        if (!defined('_OMNIVA_INTEGRATION_AGENT_ID_')) {
+            $username = $this->getConfigData('account');
+            define('_OMNIVA_INTEGRATION_AGENT_ID_', $username . ' Magento v' . $this->getModuleVersion());
+        }
+
         //check terminals list
         $this->_locationFile = $configReader->getModuleDir(Dir::MODULE_ETC_DIR, 'Omnivalt_Shipping') . '/locations.json';
         try {
@@ -273,6 +291,16 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         } catch (\Exception $e) {
             
         }
+    }
+
+    /**
+     * Get module version
+     * 
+     * @return string
+     */
+    public function getModuleVersion()
+    {
+        return $this->_moduleList->getOne(self::MODULE)['setup_version'] ?? '0.0.0';
     }
 
     /**
