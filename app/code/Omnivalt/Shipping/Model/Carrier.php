@@ -264,8 +264,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         );
 
         if (!defined('_OMNIVA_INTEGRATION_AGENT_ID_')) {
-            $username = $this->getConfigData('account');
-            define('_OMNIVA_INTEGRATION_AGENT_ID_', $username . ' Magento v' . $this->getModuleVersion());
+            define('_OMNIVA_INTEGRATION_AGENT_ID_', '7005511 Magento v' . $this->getModuleVersion());
         }
 
         //check terminals list
