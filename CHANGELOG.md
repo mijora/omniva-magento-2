@@ -1,6 +1,6 @@
 # Changelog
 
-### Unreleased
+### Version 1.3.4
 Fixed syntax error in statistic send.
 Added platform and version identification to all requests to the Omniva server.
 
