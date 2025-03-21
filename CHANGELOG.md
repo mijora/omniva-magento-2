@@ -1,5 +1,8 @@
 # Changelog
 
+### Unreleased
+Fixed loading of the parcel terminal selection if there is a delay in loading the shipping methods list
+
 ### Version 1.3.4
 Fixed syntax error in statistic send.
 Added platform and version identification to all requests to the Omniva server.
