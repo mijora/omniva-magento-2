@@ -36,6 +36,17 @@ define([
             }
         },
         moveSelect: function () {
+            if ($('#checkout-shipping-method-load .table-checkout-shipping-method tbody tr').length === 0) {
+                console.log("OMNIVA: Shipping methods not loaded yet.");
+                setTimeout(this.moveSelect.bind(this), 500);
+                return;
+            }
+            if (this.parcelTerminals().length === 0) {
+                console.log("OMNIVA: Parcel terminals not loaded yet.");
+                setTimeout(this.moveSelect.bind(this), 500);
+                return;
+            }
+
             var omniva_last_selected_terminal = '';
             if ($('#terminal-select-location select').length > 0){
                 omniva_last_selected_terminal = $('#terminal-select-location select').val();
@@ -101,7 +112,6 @@ define([
         initObservable: function () {
             this._super();
             this.showParcelTerminalSelection = ko.computed(function() {
-                this.moveSelect();
                 return this.parcelTerminals().length != 0
             }, this);
 
@@ -145,6 +155,7 @@ define([
 
         setParcelTerminalList: function(list) {
             this.parcelTerminals(list);
+            this.showParcelTerminalSelection.notifySubscribers();
             this.moveSelect();
         },
         
