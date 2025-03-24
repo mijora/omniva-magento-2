@@ -2,6 +2,8 @@
 
 ### Unreleased
 Fixed loading of the parcel terminal selection if there is a delay in loading the shipping methods list
+Fixed usage of max weight settings parameter
+Added the ability to separately specify max weight for the parcel terminal
 
 ### Version 1.3.4
 Fixed syntax error in statistic send.

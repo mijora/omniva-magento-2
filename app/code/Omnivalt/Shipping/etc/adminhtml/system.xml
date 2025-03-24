@@ -64,7 +64,11 @@
                 </field>
             -->
                 <field id="max_package_weight" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Maximum Package Weight</label>
+                    <label>Courier maximum package weight</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                </field>
+                <field id="max_package_weight_pt" translate="label" type="text" sortOrder="141" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label>Parcel terminal maximum package weight</label>
                     <validate>validate-number validate-zero-or-greater</validate>
                 </field>
                 <!-- Free shipping price toggler -->
