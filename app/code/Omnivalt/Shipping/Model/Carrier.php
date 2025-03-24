@@ -321,6 +321,8 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         $isFreeEnabled = $this->getConfigData('free_shipping_enable');
         $allowedMethods = explode(',', $this->getConfigData('allowed_methods'));
         $company_country = $this->getConfigData('company_countrycode');
+        $max_weight_c = $this->getConfigData('max_package_weight');
+        $max_weight_pt = $this->getConfigData('max_package_weight_pt');
         
         $country_id = $request->getDestCountryId();
         
@@ -342,6 +344,9 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $title = $this->getConfigData('title');
 
             if ($allowedMethod == "COURIER") {
+                if (!empty($max_weight_c) && $packageWeight > floatval($max_weight_c)) {
+                    continue;
+                }
                 switch ($country_id) {
                     case 'LV':
                         $amount = $this->getConfigData('priceLV_C');
@@ -362,6 +367,9 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                 }
             }
             if ($allowedMethod == "PARCEL_TERMINAL") {
+                if (!empty($max_weight_pt) && $packageWeight > floatval($max_weight_pt)) {
+                    continue;
+                }
                 switch ($country_id) {
                     case 'LV':
                         $amount = $this->getConfigData('priceLV_pt');
