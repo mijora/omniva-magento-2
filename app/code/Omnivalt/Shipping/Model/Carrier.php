@@ -770,6 +770,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $city = $this->getConfigData('company_city');
             $country = $this->getConfigData('company_countrycode');
             $bank_account = $this->getConfigData('cod_bank_account');
+            $send_return_code = $this->getConfigData('send_return_code');
 
             $receiver_country = $request->getRecipientAddressCountryCode();
 
@@ -909,6 +910,9 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                     $package
                         ->setId($package_id)
                         ->setService($service);
+                }
+                if ($send_return_code) {
+                    $package->setReturnAllowed(true);
                 }
                 if ($i == 0 || $is_terminal || !$is_cod) {        
                     $package->setAdditionalServices($additionalServices);
