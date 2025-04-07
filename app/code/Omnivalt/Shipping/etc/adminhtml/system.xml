@@ -32,23 +32,23 @@
                 <field id="cod_company" translate="label" type="text" sortOrder="91" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Company name</label>
                 </field>
-                <field id="cod_bank_account" translate="label" type="text" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="0" >
-                    <label>Bank account number</label>
-                </field>
-                <field id="company_address" translate="label" type="text" sortOrder="93" showInDefault="1" showInWebsite="1" showInStore="0" >
+                <field id="company_address" translate="label" type="text" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Company street address</label>
                 </field>
-                <field id="company_city" translate="label" type="text" sortOrder="94" showInDefault="1" showInWebsite="1" showInStore="0" >
+                <field id="company_city" translate="label" type="text" sortOrder="93" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Company city</label>
                 </field>
-                <field id="company_postcode" translate="label" type="text" sortOrder="95" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="company_postcode" translate="label" type="text" sortOrder="94" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Company postcode</label>
                 </field>
-                <field id="company_countrycode" translate="label" type="text" sortOrder="96" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="company_countrycode" translate="label" type="text" sortOrder="95" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Company country code</label>
                 </field>
-                <field id="company_phone" translate="label" type="text" sortOrder="97" showInDefault="1" showInWebsite="1" showInStore="0" >
+                <field id="company_phone" translate="label" type="text" sortOrder="96" showInDefault="1" showInWebsite="1" showInStore="0" >
                     <label>Company phone</label>
+                </field>
+                <field id="cod_bank_account" translate="label" type="text" sortOrder="97" showInDefault="1" showInWebsite="1" showInStore="0" >
+                    <label>Bank account number</label>
                 </field>
                 <field id="pickup" translate="label" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Pick up from store type</label>
@@ -165,7 +165,7 @@
                     <label>FI Courier shipping price</label>
                     <validate>validate-number validate-zero-or-greater</validate>
                 </field>
-                <field id="fi_courier_free_shipping_subtotal" translate="label" type="text" sortOrder="189" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="fi_courier_free_shipping_subtotal" translate="label" type="text" sortOrder="195" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Free from</label>
                     <validate>validate-number validate-zero-or-greater</validate>
                     <depends>
@@ -173,26 +173,26 @@
                     </depends>
                 </field>
                 <!-- FI Parcel -->
-                <field id="priceFI_pt" translate="label" type="text" sortOrder="195" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="priceFI_pt" translate="label" type="text" sortOrder="196" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>FI Parcel terminal shipping price</label>
                     <validate>validate-number validate-zero-or-greater</validate>
                 </field>
-                <field id="fi_parcel_terminal_free_shipping_subtotal" translate="label" type="text" sortOrder="195" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="fi_parcel_terminal_free_shipping_subtotal" translate="label" type="text" sortOrder="197" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Free from</label>
                     <validate>validate-number validate-zero-or-greater</validate>
                     <depends>
                         <field id="free_shipping_enable">1</field>
                     </depends>
                 </field>
-                <field id="int_economy" translate="label" type="text" sortOrder="196" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="int_economy" translate="label" type="text" sortOrder="198" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>International Economy price</label>
                     <validate>validate-number validate-zero-or-greater</validate>
                 </field>
-                <field id="int_standard" translate="label" type="text" sortOrder="197" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="int_standard" translate="label" type="text" sortOrder="199" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>International Standard price</label>
                     <validate>validate-number validate-zero-or-greater</validate>
                 </field>
-                <field id="int_premium" translate="label" type="text" sortOrder="198" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="int_premium" translate="label" type="text" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>International Premium price</label>
                     <validate>validate-number validate-zero-or-greater</validate>
                 </field>
@@ -202,13 +202,19 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <!-- Fragile -->
-                <field id="fragile" translate="label" type="select" sortOrder="201" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="fragile" translate="label" type="select" sortOrder="202" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Default fragile option</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <!-- Adult attribute -->
-                <field id="attr_code" translate="label" type="text" sortOrder="202" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="attr_code" translate="label" type="text" sortOrder="203" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Add 18+ service by product attribute code</label>
+                </field>
+                <!-- Send return code -->
+                <field id="send_return_code" translate="label" type="select" sortOrder="205" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Send return code</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Please note that extra charges may apply. For more information, contact your Omniva`s business customer support.</comment>
                 </field>
                 <field id="allowed_methods" translate="label" type="multiselect" sortOrder="210" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Allowed Methods</label>
