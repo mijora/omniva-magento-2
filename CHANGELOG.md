@@ -1,9 +1,11 @@
 # Changelog
 
 ### Unreleased
-Fixed loading of the parcel terminal selection if there is a delay in loading the shipping methods list
-Fixed usage of max weight settings parameter
-Added the ability to separately specify max weight for the parcel terminal
+Fixed loading of the parcel terminal selection if there is a delay in loading the shipping methods list.
+Fixed usage of max weight settings parameter.
+Fixed the order of parameters on the settings page.
+Added the ability to separately specify max weight for the parcel terminal.
+Added a parameter to the settings that allows to activate the service of sending a shipment return code to the recipient.
 
 ### Version 1.3.4
 Fixed syntax error in statistic send.
