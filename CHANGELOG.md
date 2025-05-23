@@ -1,5 +1,8 @@
 # Changelog
 
+### Unreleased
+- Updated composer.json parameter indicating that the module works with PHP 8
+
 ### Version 1.3.5
 - Fixed loading of the parcel terminal selection if there is a delay in loading the shipping methods list.
 - Fixed usage of max weight settings parameter.
