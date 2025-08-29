@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": "^7.0 || ^8.0",
-        "mijora/omniva-api": "^1.2.0"
+        "mijora/omniva-api": "^1.3.5"
     },
     "autoload": {
       "files": [
