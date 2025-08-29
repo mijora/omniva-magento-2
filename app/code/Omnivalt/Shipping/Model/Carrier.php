@@ -758,7 +758,9 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
         $result = new \Magento\Framework\DataObject();
 
         try {
-            $order = $request->getOrderShipment()->getOrder();
+            $order_shipment = $request->getOrderShipment();
+            $order = $order_shipment->getOrder();
+            $order_items = $order_shipment->getAllItems();
             $username = $this->getConfigData('account');
             $password = $this->getConfigData('password');
             $api_url = $this->getConfigData('production_webservices_url');
@@ -819,6 +821,7 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             }
             $is_terminal = $send_method_name == 'PARCEL_TERMINAL';
 
+            $content_desription = $this->getContentDescription($order_items);
 
             $shipment = new Shipment();
             /*
@@ -905,7 +908,8 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
                         ->setService(Package::MAIN_SERVICE_PARCEL, Package::CHANNEL_COURIER)
                         ->setServicePackage(
                             (new ServicePackage(str_ireplace('international_', '', $send_method_name)))
-                        );
+                        )
+                        ->setContentDescription($content_desription);
                 } else {
                     $package
                         ->setId($package_id)
@@ -955,6 +959,20 @@ class Carrier extends AbstractCarrierOnline implements \Magento\Shipping\Model\C
             $result->setErrors($e->getMessage());
         }
         return $result;
+    }
+
+    private function getContentDescription($order_items) {
+        $items_names = array();
+        foreach ($order_items as $item) {
+            $order_item = $item->getOrderItem();
+
+            $qty = $order_item->getQtyOrdered();
+            $qty_formatted = rtrim(rtrim(number_format($qty, 4, '.', ''), '0'), '.');
+            $name = $order_item->getName();
+            $name = substr($name, 0, 31);
+            $items_names[] = $qty_formatted . '×' . trim($name);
+        }
+        return implode('; ', $items_names);
     }
 
     /**

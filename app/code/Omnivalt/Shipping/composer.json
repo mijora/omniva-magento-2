@@ -2,7 +2,7 @@
     "name": "omnivalt/shipping",
     "description": "Omniva shipping module for Magento 2.*",
     "type": "magento2-module",
-    "version": "1.3.5",
+    "version": "1.3.6",
     "authors": [
         {
             "name": "Mijora",
@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": "^7.0 || ^8.0",
-        "mijora/omniva-api": "^1.2.0"
+        "mijora/omniva-api": "^1.3.5"
     },
     "autoload": {
       "files": [
