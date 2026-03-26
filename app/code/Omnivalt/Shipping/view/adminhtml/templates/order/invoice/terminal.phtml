@@ -1,0 +1,11 @@
+<?php
+if ($this->blockIsVisible()) {
+    $pickup_point = $this->getTerminalName();
+    if ($this->isOmnivaTerminal()) {
+        echo '<div style="border:1px solid #ccc; padding: 10px;">';
+        echo '<b>' . __("Omniva parcel terminal") . '</b>: ';
+        echo ($pickup_point ? $this->escapeHtml($pickup_point) : '-');
+        echo '</div>';
+    }
+}
+?>

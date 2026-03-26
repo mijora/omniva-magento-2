@@ -2,6 +2,7 @@
 
 ### Unreleased
 - Fixed UpgradeScheme to work when tables have a prefix
+- Added display of selected parcel terminal on invoices
 
 ### Version 1.3.6
 - Updated composer.json parameter indicating that the module works with PHP 8
