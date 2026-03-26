@@ -47,6 +47,9 @@ class Terminal extends \Magento\Backend\Block\Template
 
     public function getTerminalName() {
         $order = $this->getOrder();
+        if (!$order) {
+            return false;
+        }
         if (strtoupper($order->getData('shipping_method') ?? '') == strtoupper('Omnivalt_PARCEL_TERMINAL')) {
             return $this->getTerminal($order);
         }
@@ -55,6 +58,9 @@ class Terminal extends \Magento\Backend\Block\Template
 
     public function isOmnivaTerminal() {
         $order = $this->getOrder();
+        if (!$order) {
+            return false;
+        }
         return strtoupper($order->getData('shipping_method') ?? '') == strtoupper('Omnivalt_PARCEL_TERMINAL');
     }
 
@@ -99,10 +105,18 @@ class Terminal extends \Magento\Backend\Block\Template
     /**
      * Retrieve order model instance
      *
-     * @return \Magento\Sales\Model\Order
+     * @return \Magento\Sales\Model\Order|null
      */
     public function getOrder() {
-        return $this->coreRegistry->registry('current_order');
+        $order = $this->coreRegistry->registry('current_order');
+        if ($order) {
+            return $order;
+        }
+        $invoice = $this->coreRegistry->registry('current_invoice');
+        if ($invoice) {
+            return $invoice->getOrder();
+        }
+        return null;
     }
 
     public function blockIsVisible() {

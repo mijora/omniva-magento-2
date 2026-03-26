@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="form">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Omnivalt_Shipping::order/invoice/create/form.phtml</argument>
+            </action>
+            <block class="Omnivalt\Shipping\Block\Adminhtml\Sales\Terminal" name="omnivalt_newinvoice_terminal" as="omnivalt_terminal_info" template="Omnivalt_Shipping::order/invoice/terminal.phtml" />
+        </referenceBlock>
+    </body>
+</page>
