@@ -1,6 +1,6 @@
 # Changelog
 
-### Unreleased
+### Version 1.3.7
 - Fixed UpgradeScheme to work when tables have a prefix
 - Added display of selected parcel terminal on invoices
 
