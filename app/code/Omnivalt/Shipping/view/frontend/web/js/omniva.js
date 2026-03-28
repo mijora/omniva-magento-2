@@ -1,4 +1,13 @@
 var omniva_last_selected_terminal = '';
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 (function ( $ ) {
     $.fn.omniva = function(options) {
         var settings = $.extend({
@@ -204,22 +213,25 @@ var omniva_last_selected_terminal = '';
                     counter++;
                     if (settings.showMap == true && counter <= settings.maxShow){
                         //console.log('add-to-map');
-                        html += '<li data-pos="['+[val.x, val.y]+']" data-id="'+val.zip+'" ><div><a class="omniva-li">'+counter+'. <b>'+val.name+'</b></a> <b>'+val.distance+' km.</b>\
-                                  <div align="left" id="omn-'+val.zip+'" class="omniva-details" style="display:none;"><small>\
-                                  '+val.address+' <br/>'+val.comment+'</small><br/>\
-                                  <button type="button" class="btn-marker" style="font-size:14px; padding:0px 5px;margin-bottom:10px; margin-top:5px;height:25px;" data-id="'+val.zip+'">'+select_terminal+'</button>\
-                                  </div>\
-                                  </div></li>';
+                        html += '<li data-pos="[' + val.x + ', ' + val.y + ']" data-id="' + val.zip + '"><div>';
+                        html += '<a class="omniva-li">' + counter + '. <b>' + escapeHtml(val.name) + '</b></a>';
+                        html += ' <b>' + escapeHtml(val.distance + ' km.') + '</b>';
+                        html += '<div align="left" id="omn-' + val.zip + '" class="omniva-details" style="display:none;"><small>';
+                        html += escapeHtml(val.address) + ' <br/>' + escapeHtml(val.comment) + '</small><br/>';
+                        html += '<button type="button" class="btn-marker" style="font-size:14px; padding:0px 5px;margin-bottom:10px; margin-top:5px;height:25px;" data-id="' + val.zip + '">';
+                        html += escapeHtml(select_terminal) + '</button>';
+                        html += '</div></div></li>';
                     }
                 } else {
                     if (settings.showMap == true ){
                         //console.log('add-to-map');
-                        html += '<li data-pos="['+[val.x, val.y]+']" data-id="'+val.zip+'" ><div><a class="omniva-li">'+(i+1)+'. <b>'+val.name+'</b></a>\
-                                  <div align="left" id="omn-'+val.zip+'" class="omniva-details" style="display:none;"><small>\
-                                  '+val.address+' <br/>'+val.comment+'</small><br/>\
-                                  <button type="button" class="btn-marker" style="font-size:14px; padding:0px 5px;margin-bottom:10px; margin-top:5px;height:25px;" data-id="'+val.zip+'">'+select_terminal+'</button>\
-                                  </div>\
-                                  </div></li>';
+                        html += '<li data-pos="[' + val.x + ', ' + val.y + ']" data-id="' + val.zip + '"><div>';
+                        html += '<a class="omniva-li">' + (i + 1) + '. <b>' + escapeHtml(val.name) + '</b></a>';
+                        html += '<div align="left" id="omn-' + val.zip + '" class="omniva-details" style="display:none;"><small>';
+                        html += escapeHtml(val.address) + ' <br/>' + escapeHtml(val.comment) + '</small><br/>';
+                        html += '<button type="button" class="btn-marker" style="font-size:14px; padding:0px 5px;margin-bottom:10px; margin-top:5px;height:25px;" data-id="' + val.zip + '">';
+                        html += escapeHtml(select_terminal) + '</button>';
+                        html += '</div></div></li>';
                     }
                 }
                 if (selected != false && selected.id == val.zip){
@@ -592,15 +604,18 @@ var omniva_last_selected_terminal = '';
               if (location['distance'] != undefined){
                 distance = location['distance'];
               }
-              html += '<li data-pos="['+destination+']" data-id="'+location.zip+'" ><div><a class="omniva-li">'+counter+'. <b>'+location.name+'</b></a>';
-              if (distance != 0) {
-              html += ' <b>'+distance+' km.</b>';
-              }
-               html += '<div align="left" id="omn-'+location.zip+'" class="omniva-details" style="display:none;"><small>\
-                                          '+location.address+' <br/>'+location.comment+'</small><br/>\
-                                          <button type="button" class="btn-marker" style="font-size:14px; padding:0px 5px;margin-bottom:10px; margin-top:5px;height:25px;" data-id="'+location.zip+'">'+select_terminal+'</button>\
-                                          </div>\
-                                          </div></li>';
+              html += '<li data-pos="[' + val.x + ', ' + val.y + ']" data-id="' + val.zip + '"><div>';
+              html += '<a class="omniva-li">' + counter + '. <b>' + escapeHtml(val.name) + '</b></a>';
+                
+                if (val.distance) {
+                    html += ' <b>' + escapeHtml(val.distance) + ' km.</b>';
+                }
+                
+               html += '<div align="left" id="omn-' + val.zip + '" class="omniva-details" style="display:none;"><small>' +
+                    escapeHtml(val.address) + ' <br/>' + escapeHtml(val.comment) + '</small><br/>' +
+                    '<button type="button" class="btn-marker" style="font-size:14px; padding:0px 5px;margin-bottom:10px; margin-top:5px;height:25px;" data-id="' + val.zip + '">' +
+                    escapeHtml(select_terminal) + '</button>' +
+                    '</div></div></li>';
                                               
                               counter++;           
                                
