@@ -128,6 +128,11 @@ define([
                 return selectedMethod;
             }, this);
 
+            // Restore terminal row after rates re-render (e.g. Amasty OSC keeps the same shippingMethod)
+            shippingService.getShippingRates().subscribe(function() {
+                setTimeout(this.moveSelect.bind(this), 0);
+            }, this);
+
             quote.shippingMethod.subscribe(function(method) {
                 this.moveSelect();
                 var selectedMethod = method != null ? method.carrier_code + '_' + method.method_code : null;
