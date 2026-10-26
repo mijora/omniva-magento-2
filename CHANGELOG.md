@@ -1,6 +1,6 @@
 # Changelog
 
-### Unreleased
+### Version 1.3.8
 - Fixed static content deploy failing during JS minification of the parcel terminal selection script
 - Fixed endless loading in checkout when the parcel terminal method is selected before the postcode is entered
 - Fixed sending of a saved parcel terminal that is not available for the selected country
