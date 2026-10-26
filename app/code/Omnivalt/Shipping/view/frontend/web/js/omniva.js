@@ -177,7 +177,7 @@ var omniva_last_selected_terminal = '';
         function searchByAddress(){
             if (selected == false){
             
-            if (omnivadata.postcode.length > 3){
+            if (omnivadata.postcode && omnivadata.postcode.length > 3){
                     search.val(omnivadata.postcode).trigger('selectpostcode');
                 }
             }
