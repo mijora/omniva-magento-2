@@ -1,5 +1,12 @@
 # Changelog
 
+### Version 1.3.8
+- Fixed static content deploy failing during JS minification of the parcel terminal selection script
+- Fixed endless loading in checkout when the parcel terminal method is selected before the postcode is entered
+- Fixed sending of a saved parcel terminal that is not available for the selected country
+- Fixed parcel terminal selection disappearing after the shipping methods list is reloaded in Amasty One Step Checkout
+- Fixed page jumping to the top with an error when the parcel terminal method is selected in Amasty One Step Checkout
+
 ### Version 1.3.7
 - Fixed UpgradeScheme to work when tables have a prefix
 - Added display of selected parcel terminal on invoices

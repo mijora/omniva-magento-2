@@ -75,7 +75,13 @@ define([
 
             
             if (omnivaData.getPickupPoint()){
-                $('#terminal-select-location select').val(omnivaData.getPickupPoint());
+                var terminal_select = $('#terminal-select-location select');
+                // Saved terminal is not in the loaded list (e.g. country changed), so it must not be sent with the order
+                if (terminal_select.find('optgroup option').length > 0 && terminal_select.find('option[value="' + omnivaData.getPickupPoint() + '"]').length == 0){
+                    omnivaData.setPickupPoint(null);
+                } else {
+                    terminal_select.val(omnivaData.getPickupPoint());
+                }
             }
             
             if($('#omnivaLtModal').length > 0 && $('.omniva-terminals-list').length == 0){
@@ -120,6 +126,11 @@ define([
                 var method = quote.shippingMethod();
                 var selectedMethod = method != null ? method.carrier_code + '_' + method.method_code : null;
                 return selectedMethod;
+            }, this);
+
+            // Restore terminal row after rates re-render (e.g. Amasty OSC keeps the same shippingMethod)
+            shippingService.getShippingRates().subscribe(function() {
+                setTimeout(this.moveSelect.bind(this), 0);
             }, this);
 
             quote.shippingMethod.subscribe(function(method) {

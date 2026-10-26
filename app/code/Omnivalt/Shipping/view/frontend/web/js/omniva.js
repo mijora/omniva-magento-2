@@ -177,7 +177,7 @@ var omniva_last_selected_terminal = '';
         function searchByAddress(){
             if (selected == false){
             
-            if (omnivadata.postcode.length > 3){
+            if (omnivadata.postcode && omnivadata.postcode.length > 3){
                     search.val(omnivadata.postcode).trigger('selectpostcode');
                 }
             }
@@ -204,22 +204,22 @@ var omniva_last_selected_terminal = '';
                     counter++;
                     if (settings.showMap == true && counter <= settings.maxShow){
                         //console.log('add-to-map');
-                        html += '<li data-pos="['+[val.x, val.y]+']" data-id="'+val.zip+'" ><div><a class="omniva-li">'+counter+'. <b>'+val.name+'</b></a> <b>'+val.distance+' km.</b>\
-                                  <div align="left" id="omn-'+val.zip+'" class="omniva-details" style="display:none;"><small>\
-                                  '+val.address+' <br/>'+val.comment+'</small><br/>\
-                                  <button type="button" class="btn-marker" style="font-size:14px; padding:0px 5px;margin-bottom:10px; margin-top:5px;height:25px;" data-id="'+val.zip+'">'+select_terminal+'</button>\
-                                  </div>\
-                                  </div></li>';
+                        html += '<li data-pos="['+[val.x, val.y]+']" data-id="'+val.zip+'" ><div><a class="omniva-li">'+counter+'. <b>'+val.name+'</b></a> <b>'+val.distance+' km.</b>'
+                              + '<div align="left" id="omn-'+val.zip+'" class="omniva-details" style="display:none;"><small>'
+                              + val.address+' <br/>'+val.comment+'</small><br/>'
+                              + '<button type="button" class="btn-marker" style="font-size:14px; padding:0px 5px;margin-bottom:10px; margin-top:5px;height:25px;" data-id="'+val.zip+'">'+select_terminal+'</button>'
+                              + '</div>'
+                              + '</div></li>';
                     }
                 } else {
                     if (settings.showMap == true ){
                         //console.log('add-to-map');
-                        html += '<li data-pos="['+[val.x, val.y]+']" data-id="'+val.zip+'" ><div><a class="omniva-li">'+(i+1)+'. <b>'+val.name+'</b></a>\
-                                  <div align="left" id="omn-'+val.zip+'" class="omniva-details" style="display:none;"><small>\
-                                  '+val.address+' <br/>'+val.comment+'</small><br/>\
-                                  <button type="button" class="btn-marker" style="font-size:14px; padding:0px 5px;margin-bottom:10px; margin-top:5px;height:25px;" data-id="'+val.zip+'">'+select_terminal+'</button>\
-                                  </div>\
-                                  </div></li>';
+                        html += '<li data-pos="['+[val.x, val.y]+']" data-id="'+val.zip+'" ><div><a class="omniva-li">'+(i+1)+'. <b>'+val.name+'</b></a>'
+                              + '<div align="left" id="omn-'+val.zip+'" class="omniva-details" style="display:none;"><small>'
+                              + val.address+' <br/>'+val.comment+'</small><br/>'
+                              + '<button type="button" class="btn-marker" style="font-size:14px; padding:0px 5px;margin-bottom:10px; margin-top:5px;height:25px;" data-id="'+val.zip+'">'+select_terminal+'</button>'
+                              + '</div>'
+                              + '</div></li>';
                     }
                 }
                 if (selected != false && selected.id == val.zip){
@@ -596,11 +596,11 @@ var omniva_last_selected_terminal = '';
               if (distance != 0) {
               html += ' <b>'+distance+' km.</b>';
               }
-               html += '<div align="left" id="omn-'+location.zip+'" class="omniva-details" style="display:none;"><small>\
-                                          '+location.address+' <br/>'+location.comment+'</small><br/>\
-                                          <button type="button" class="btn-marker" style="font-size:14px; padding:0px 5px;margin-bottom:10px; margin-top:5px;height:25px;" data-id="'+location.zip+'">'+select_terminal+'</button>\
-                                          </div>\
-                                          </div></li>';
+               html += '<div align="left" id="omn-'+location.zip+'" class="omniva-details" style="display:none;"><small>'
+                     + location.address+' <br/>'+location.comment+'</small><br/>'
+                     + '<button type="button" class="btn-marker" style="font-size:14px; padding:0px 5px;margin-bottom:10px; margin-top:5px;height:25px;" data-id="'+location.zip+'">'+select_terminal+'</button>'
+                     + '</div>'
+                     + '</div></li>';
                                               
                               counter++;           
                                

@@ -25,9 +25,12 @@ define([
                 
                 if (selectedShippingMethod.method_code === 'PARCEL_TERMINAL' &&
                     !terminal) {
-                    globalMessageList.addErrorMessage(
-                        {message: $t('Select Omniva parcel terminal!')});
-                    jQuery(window).scrollTop(0);
+                    // Amasty OSC calls this on method select; terminal is still checked on place order by shipping-validation
+                    if ($('#checkout[data-amcheckout-js="checkout"]').length === 0) {
+                        globalMessageList.addErrorMessage(
+                            {message: $t('Select Omniva parcel terminal!')});
+                        jQuery(window).scrollTop(0);
+                    }
                     return originalAction();
                 }
                 
