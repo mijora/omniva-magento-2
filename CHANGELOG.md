@@ -5,6 +5,7 @@
 - Leaflet and Leaflet.markercluster are now loaded from the module instead of unpkg.com CDN
 - Added parcel terminal address to the terminals list returned for checkout
 - Removed old map script and its styles/images
+- Added sorting by order number in the Omniva manifest page tables (descending by default)
 
 ### Version 1.3.8
 - Fixed static content deploy failing during JS minification of the parcel terminal selection script
