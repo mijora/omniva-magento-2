@@ -40,6 +40,22 @@ if (count($items)):
         $current_page = $total_pages;
     }
     $counter = 0;
+
+    $renderActionButtons = function ($show_print_manifest = true) {
+        ?>
+        <?php if ($show_print_manifest): ?>
+            <button title="<?php echo __('Print manifest'); ?>" type="button" class="scalable save js-omniva-print-manifest">
+                <span><span><span><?php echo __('Print manifest'); ?></span></span></span>
+            </button>
+        <?php endif; ?>
+        <button title="<?php echo __('Print labels'); ?>" type="button" class="scalable save js-omniva-print-labels">
+            <span><span><span><?php echo __('Print labels'); ?></span></span></span>
+        </button>
+        <button title="<?php echo __('Generate labels'); ?>" type="button" class="scalable save js-omniva-generate-labels">
+            <span><span><span><?php echo __('Generate labels'); ?></span></span></span>
+        </button>
+        <?php
+    };
     ?>
     <?php
     if ($total_pages > 1) {
@@ -71,6 +87,11 @@ if (count($items)):
         ?>
         <br/>
         <h3><?php echo ($date == "new" ? __('New orders') : $date); ?></h3>
+        <?php if ($date == "new"): ?>
+            <div class="omniva-manifest-actions" style="margin-bottom:10px;">
+                <?php $renderActionButtons(false); ?>
+            </div>
+        <?php endif; ?>
         <div class = "grid">
             <table class="data-grid">
                 <thead>
@@ -102,6 +123,11 @@ if (count($items)):
                 </tbody>
             </table>
         </div>
+        <?php if ($date == "new"): ?>
+            <div class="omniva-manifest-actions" style="margin-top:10px;">
+                <?php $renderActionButtons(true); ?>
+            </div>
+        <?php endif; ?>
     <?php endforeach; ?>
     <?php echo $this->getPagerHtml(); ?>
     <div>
@@ -116,69 +142,39 @@ if (count($items)):
             <form id = "labels-generate-form" action = "<?php echo $this->getUrl('omnivalt/omnivamanifest/generatelabels' . ($old_version ? 'ov' : '')); ?>" method = "POST">
                 <input type = "hidden" name = "form_key" value = "<?php echo $this->getFormKey(); ?>"/>
             </form>
-            <button id="submit_manifest_items" title="<?php echo __('Print manifest'); ?>" type="button" class="scalable save">
-                <span><span><span><?php echo __('Print manifest'); ?></span></span></span>
-            </button>      
-            <button id="print_manifest_labels" title="<?php echo __('Print labels'); ?>" type="button" class="scalable save">
-                <span><span><span><?php echo __('Print labels'); ?></span></span></span>
-            </button>    
-            <button id="submit_manifest_labels" title="<?php echo __('Generate labels'); ?>" type="button" class="scalable save">
-                <span><span><span><?php echo __('Generate labels'); ?></span></span></span>
-            </button>     
+            <?php $renderActionButtons(true); ?>
         </div>
         <div class="f-clear"></div>
     </div>
     <script>
         require(['jquery'], function ($) {
             $('document').ready(function () {
-                $('#submit_manifest_items').on('click', function () {
-                    var ids = "";
-                    $('.manifest-item:checked').each(function () {
-                        ids += $(this).val() + ";";
-                        var id = $(this).val();
-                        $('#manifest-print-form').append('<input type="hidden" name="order_ids[]" value = "' + id + '" />');
-                    });
-                    $('#item_ids').val(ids);
-                    if (ids == "") {
+                var submitSelectedOrders = function (formSelector) {
+                    var $form = $(formSelector);
+                    var $checked = $('.manifest-item:checked');
+                    if (!$checked.length) {
                         alert('<?php echo __('Select orders'); ?>');
-                    } else {
-                        $('#manifest-print-form').submit();
+                        return;
                     }
-                    //console.log($('#item_ids').val());
-
-                });
-                
-                $('#print_manifest_labels').on('click', function () {
-                    var ids = "";
-                    $('.manifest-item:checked').each(function () {
-                        ids += $(this).val() + ";";
-                        var id = $(this).val();
-                        $('#labels-print-form').append('<input type="hidden" name="order_ids[]" value = "' + id + '" />');
+                    $form.find('input[name="order_ids[]"]').remove();
+                    $checked.each(function () {
+                        $('<input type="hidden" name="order_ids[]" />').val($(this).val()).appendTo($form);
                     });
-                    if (ids == "") {
-                        alert('<?php echo __('Select orders'); ?>');
-                    } else {
-                        $('#labels-print-form').submit();
-                    }
-                    //console.log($('#item_ids').val());
+                    $form.submit();
+                };
 
+                $('.js-omniva-print-manifest').on('click', function () {
+                    submitSelectedOrders('#manifest-print-form');
                 });
 
-                $('#submit_manifest_labels').on('click', function () {
-                    var ids = "";
-                    $('.manifest-item:checked').each(function () {
-                        ids += $(this).val() + ";";
-                        var id = $(this).val();
-                        $('#labels-generate-form').append('<input type="hidden" name="order_ids[]" value = "' + id + '" />');
-                    });
-                    if (ids == "") {
-                        alert('<?php echo __('Select orders'); ?>');
-                    } else {
-                        $('#labels-generate-form').submit();
-                    }
-                    //console.log($('#item_ids').val());
-
+                $('.js-omniva-print-labels').on('click', function () {
+                    submitSelectedOrders('#labels-print-form');
                 });
+
+                $('.js-omniva-generate-labels').on('click', function () {
+                    submitSelectedOrders('#labels-generate-form');
+                });
+
                 $('.omniva-sort-order-number').on('click', function (e) {
                     if ($(e.target).is('input')) {
                         return;

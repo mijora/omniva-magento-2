@@ -6,6 +6,7 @@
 - Added parcel terminal address to the terminals list returned for checkout
 - Removed old map script and its styles/images
 - Added sorting by order number in the Omniva manifest page tables (descending by default)
+- Added action buttons above and below the "New orders" table in the Omniva manifest page
 
 ### Version 1.3.8
 - Fixed static content deploy failing during JS minification of the parcel terminal selection script
