@@ -21,6 +21,13 @@ if (count($items)):
         $grouped_items[$date][] = $item;
     }
     krsort($grouped_items);
+    //sort orders in each group by order number DESC
+    foreach ($grouped_items as $date => $group_orders) {
+        usort($group_orders, function ($a, $b) {
+            return strnatcasecmp((string) $b->getIncrementId(), (string) $a->getIncrementId());
+        });
+        $grouped_items[$date] = $group_orders;
+    }
     $items_ignore = array();
     $p_limit = 4;
     $total_pages = ceil(count($grouped_items) / $p_limit);
@@ -69,7 +76,7 @@ if (count($items)):
                 <thead>
                     <tr >
                         <th class = "data-grid-th"><span class="data-grid-cell-content"><input type = "checkbox"  class = "check-all"/></span></th>
-                        <th class = "data-grid-th"><span class="data-grid-cell-content"><?php echo __('Order #'); ?></span></th>
+                        <th class = "data-grid-th _sortable _descend omniva-sort-order-number" data-sort-dir="desc" style="cursor:pointer;" title="<?php echo __('Sort'); ?>"><span class="data-grid-cell-content"><?php echo __('Order #'); ?></span></th>
                         <th class = "data-grid-th"><span class="data-grid-cell-content"><?php echo __('Shipping method'); ?></span></th>
                         <th class = "data-grid-th"><span class="data-grid-cell-content"><?php echo __('Tracking'); ?></span></th>
                         <th class = "data-grid-th"><span class="data-grid-cell-content"><?php echo __('Label history'); ?></span></th>
@@ -79,7 +86,7 @@ if (count($items)):
                 <tbody>
                     <?php $_odd = ''; ?>
                     <?php foreach ($orders as $order): ?>
-                        <tr class = "data-row">
+                        <tr class = "data-row" data-order-number="<?php echo htmlspecialchars((string) $order->getIncrementId(), ENT_QUOTES); ?>">
                             <?php
                             $order_items = array();
                             $ids = $order->getId();
@@ -171,6 +178,27 @@ if (count($items)):
                     }
                     //console.log($('#item_ids').val());
 
+                });
+                $('.omniva-sort-order-number').on('click', function (e) {
+                    if ($(e.target).is('input')) {
+                        return;
+                    }
+                    var $th = $(this);
+                    var dir = $th.attr('data-sort-dir') === 'desc' ? 'asc' : 'desc';
+                    var $tbody = $th.closest('table').children('tbody');
+                    var rows = $tbody.children('tr.data-row').get();
+                    rows.sort(function (a, b) {
+                        var valA = String($(a).attr('data-order-number') || '');
+                        var valB = String($(b).attr('data-order-number') || '');
+                        var result = valA.localeCompare(valB, undefined, {numeric: true, sensitivity: 'base'});
+                        return dir === 'asc' ? result : -result;
+                    });
+                    $.each(rows, function (index, row) {
+                        $tbody.append(row);
+                    });
+                    $th.attr('data-sort-dir', dir)
+                        .toggleClass('_ascend', dir === 'asc')
+                        .toggleClass('_descend', dir === 'desc');
                 });
                 $('.check-all').on('click', function () {
                     var checked = $(this).prop('checked');
