@@ -5,7 +5,7 @@ var config = {
             "Magento_Checkout/js/model/shipping-save-processor/default" : "Omnivalt_Shipping/js/shipping-save-processor-default-override",
         }
     },
-     * 
+     *
      */
     config: {
         mixins: {
@@ -18,11 +18,23 @@ var config = {
         }
     },
     paths: {
-        leaflet: 'https://unpkg.com/leaflet@1.6.0/dist/leaflet'
+        leaflet: 'Omnivalt_Shipping/js/leaflet',
+        'leaflet.markercluster': 'Omnivalt_Shipping/js/leaflet.markercluster',
+        omnivaTerminalMapping: 'Omnivalt_Shipping/terminal-mapping/terminal-mapping.omniva-fullwidth'
     },
     shim: {
         leaflet: {
             exports: 'L'
+        },
+        'leaflet.markercluster': {
+            deps: ['leaflet']
+        },
+        // Terminal mapping library checks for global L and L.markerClusterGroup
+        // and would inject them from CDN as plain <script> tags otherwise,
+        // which breaks RequireJS (anonymous define). Load them first.
+        omnivaTerminalMapping: {
+            deps: ['leaflet', 'leaflet.markercluster'],
+            exports: 'OmnivaTerminalMapping'
         }
     }
 };

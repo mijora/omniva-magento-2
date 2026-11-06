@@ -6,10 +6,6 @@
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <head>
-        <css src="Omnivalt_Shipping::css/omniva.css" />
-        <css src="Omnivalt_Shipping::css/leaflet.css" />
-    </head>
     <body>
         <referenceBlock name="checkout.cart.shipping">
             <arguments>
