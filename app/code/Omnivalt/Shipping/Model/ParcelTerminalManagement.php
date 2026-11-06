@@ -61,6 +61,7 @@ class ParcelTerminalManagement implements ParcelTerminalManagementInterface
                     'y' => $loc_data['Y_COORDINATE'],
                     'comment' => $loc_data['comment_' . $comment_language],
                     'city' => $loc_data['A1_NAME'],
+                    'address' => $this->buildTerminalAddress($loc_data),
                 );
                 if (!isset($result[$loc_data['A1_NAME']])) {
                     $city_object = array('name' => $loc_data['A1_NAME'], 'terminals' => array());
@@ -83,6 +84,24 @@ class ParcelTerminalManagement implements ParcelTerminalManagementInterface
             }
         }
         return $result;
+    }
+
+    /**
+     * Build terminal address (street, house number, settlement) for the map
+     *
+     * @param array $loc_data
+     * @return string
+     */
+    private function buildTerminalAddress($loc_data) {
+        $address = !empty($loc_data['A5_NAME']) ? $loc_data['A5_NAME'] : '';
+        if (!empty($loc_data['A7_NAME'])) {
+            $address = trim($address . ' ' . $loc_data['A7_NAME']);
+        }
+        if (!empty($loc_data['A3_NAME'])) {
+            $address .= ($address !== '' ? ', ' : '') . $loc_data['A3_NAME'];
+        }
+
+        return $address !== '' ? $address : (string) $loc_data['A2_NAME'];
     }
 
 }

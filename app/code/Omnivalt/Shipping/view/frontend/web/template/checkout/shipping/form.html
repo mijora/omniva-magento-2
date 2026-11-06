@@ -1,42 +1,6 @@
-<div class="omnivalt-parcel-terminal-list-wrapper" data-bind2="visible: selectedMethod() == 'omnivalt_PARCEL_TERMINAL'" style = "max-width:500px; display: none;">
-    <p data-bind="visible: !showParcelTerminalSelection(), i18n: 'No parcel termninals found'"></p>
-    <div data-bind="visible: showParcelTerminalSelection()">
-        <select class="parcel-terminal-list" data-bind="
-                                            foreach: parcelTerminals(),
-                                            " >
-            <option value = "" data-bind = "value: '', visible: $index() == 0, i18n:'Select terminal'"></option>
-            <optgroup data-bind="attr: {label: name}, foreach: terminals">
-                <option data-bind="value: zip, text: name + ' (' + location +')', attr:{'data-x': x,'data-y': y,'data-comment': comment,'data-name':name,'data-location':location,'data-city':city}" ></option>
-            </optgroup>
-        </select>
-        <button type="button" class="btn btn-basic btn-sm omniva-btn show-omniva-map" style = "display: none;"><span data-bind="i18n: 'Show in map'"></span> <img data-bind="attr:{src: require.toUrl(btnIconUrl())}"/></button>
-    </div>
-    
-</div>
-<div id="omnivaLtModal" class="modal">
-    <div class="omniva-modal-content">
-            <div class="omniva-modal-header">
-            <span class="close" id="terminalsModal">&times;</span>
-            <h5 style="display: inline"  data-bind=""></h5>
-            </div>
-            <div class="omniva-modal-body" style="/*overflow: hidden;*/">
-                <div id = "omnivaMapContainer"></div>
-                <div class="omniva-search-bar" >
-                    <h4 style="margin-top: 0px;" data-bind="i18n: 'Parcel terminals addresses'"></h4>
-                    <div id="omniva-search">
-                    <form>
-                    <input type = "text" data-bind = "attr:{placeholder : 'Enter postcode'}"/>
-                    <button type = "submit" id="map-search-button"></button>
-                    </form>                    
-                    <div class="omniva-autocomplete scrollbar" style = "display:none;"><ul></ul></div>
-                    </div>
-                    <div class = "omniva-back-to-list" style = "display:none;" data-bind="i18n: 'Back to list'"></div>
-                    <div class="found_terminals scrollbar" id="style-8">
-                      <ul>
-                      
-                      </ul>
-                    </div>
-                </div>
-        </div>
-    </div>
-</div>
+<!--
+    Parcel terminal selection is rendered by the terminal-mapping library into
+    a table row inserted after the Omniva parcel terminal shipping method
+    (see Omnivalt_Shipping/js/view/checkout/shipping/form).
+-->
+<div class="omnivalt-parcel-terminal-list-wrapper" style="display: none;"></div>

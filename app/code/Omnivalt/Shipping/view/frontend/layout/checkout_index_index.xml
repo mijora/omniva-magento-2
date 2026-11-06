@@ -7,8 +7,11 @@
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <head>
-        <css src="Omnivalt_Shipping::css/omniva.css" />
         <css src="Omnivalt_Shipping::css/leaflet.css" />
+        <css src="Omnivalt_Shipping::css/MarkerCluster.css" />
+        <css src="Omnivalt_Shipping::css/MarkerCluster.Default.css" />
+        <css src="Omnivalt_Shipping::terminal-mapping/terminal-mapping.omniva-fullwidth.css" />
+        <css src="Omnivalt_Shipping::css/omniva.css" />
     </head>
     <body>
         <referenceBlock name="checkout.root">
